@@ -52,6 +52,7 @@ body {
 main {
     flex: 1;
     background-color: #fff;
+    margin-top: 150px;
     padding: 20px;
     margin-left: 250px; /* Largura da sidebar */
 }
