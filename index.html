@@ -5,19 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verificação de Códigos de Barras</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
     <div class="container">
-        <h1>Verificação de Códigos de Barras</h1>
-        <div class="barcode-checker">
-            <label for="barcode1">Código de Barras 1:</label>
-            <input type="text" id="barcode1">
-            <label for="barcode2">Código de Barras 2:</label>
-            <input type="text" id="barcode2">
-            <button id="checkButton">Verificar</button>
-            <p id="result"></p>
-        </div>
+        <nav class="sidebar">
+            <ul>
+                <li><a href="https://id.pagar.me/signin"><i class="fas fa-home"></i>Pagar-me <Pagar-me></Pagar-me></a></li>
+                <li><a href="https://id.nfe.io/"><i class="fas fa-chart-bar"></i> NFE.io</a></li>
+                <li><a href="#"><i class="fas fa-calculator"></i> Verificador de Códigos</a></li>
+                <li><a href="#"><i class="fas fa-calendar-alt"></i> Google Agenda</a></li>
+                <li><a href="#"><i class="fas fa-envelope"></i> Simples dental</a></li>
+                <li><a href="#"><i class="fas fa-file"></i> Documentos</a></li>
+                <li><a href="#"><i class="fas fa-image"></i>BizNeoRh</a></li>
+                <li><a href="#"><i class="fas fa-music"></i>Gather</a></li>
+                <li><a href="#"><i class="fas fa-video"></i>Discord </a></li>
+                <li><a href="#"><i class="fas fa-shopping-cart"></i>Jira</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <h1>Verificação de Códigos de Barras</h1>
+            <div class="barcode-checker">
+                <label for="barcode1">Código de Barras 1:</label>
+                <input type="text" id="barcode1">
+                <label for="barcode2">Código de Barras 2:</label>
+                <input type="text" id="barcode2">
+                <button id="checkButton">Verificar</button>
+                <p id="result"></p>
+            </div>
+        </main>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
