@@ -10,3 +10,17 @@ document.getElementById("checkButton").addEventListener("click", function() {
         result.style.color = "red";
     }
 });
+
+function cleanBarcode(barcodeId) {
+    var barcode = document.getElementById(barcodeId).value;
+    var cleanedBarcode = barcode.replace(/[^a-zA-Z0-9]/g, '');
+    document.getElementById(barcodeId).value = cleanedBarcode;
+}
+
+document.getElementById("cleanButton1").addEventListener("click", function() {
+    cleanBarcode("barcode1");
+});
+
+document.getElementById("cleanButton2").addEventListener("click", function() {
+    cleanBarcode("barcode2");
+});

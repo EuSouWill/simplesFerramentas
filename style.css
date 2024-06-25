@@ -3,11 +3,11 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Times New Roman', Times, serif;
 }
 
 /* Estilos gerais */
 body {
-    font-family: 'Roboto', sans-serif;
     background-color: #f4f4f4;
 }
 
@@ -95,4 +95,19 @@ main {
 #result {
     margin-top: 20px;
     font-size: 18px;
+}
+
+button{
+    margin: 5px;
+    padding: 5px;
+    background-color: #17af12;
+    color: #f6f8f5;
+}
+
+label{
+    text-align: left;
+    font-size: 30px;
+}
+h1{
+    text-align: center;
 }
