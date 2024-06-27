@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Juros de Boleto</title>
+    <link rel="stylesheet" href="/front-end/css/calculadora.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Juros de Boleto</h1>
+        <form id="calculadora-form">
+            <div class="form-group">
+                <label for="valorBoleto">Valor do Boleto:</label>
+                <input type="number" id="valorBoleto" placeholder="Digite o valor do boleto" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="valorJuros">Valor do Juros (R$ por dia):</label>
+                <input type="number" id="valorJuros" placeholder="Digite o valor dos juros" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="multa">Multa (em reais):</label>
+                <input type="number" id="multa" placeholder="Digite o valor da multa" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="diasAtraso">Dias em Atraso:</label>
+                <input type="number" id="diasAtraso" placeholder="Digite a quantidade de dias em atraso" required>
+            </div>
+            <button type="button" onclick="calcularJuros()">Calcular Juros</button>
+        </form>
+        <div id="resultado">
+            <h2>Resultado</h2>
+            <p id="descricao"></p>
+            <p id="novoValor"></p>
+        </div>
+    </div>
+    <script src="/javascript/calculadora.js"></script>
+</body>
+</html>
