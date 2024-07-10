@@ -17,58 +17,39 @@ body {
     margin: 0 auto;
 }
 
-.sidebar {
-    width: 250px;
-    background-color: #333;
-    color: #fff;
-    padding-top: 20px;
-    height: 100vh;
-    position: fixed;
-    left: 0;
-    top: 0;
-}
-
-.sidebar ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-.sidebar ul li {
-    padding: 10px 20px;
-    border-bottom: 1px solid #555;
-}
-
-.sidebar ul li a {
-    color: #fff;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-}
-
-.sidebar ul li a i {
-    margin-right: 10px;
-}
-
 main {
     flex: 1;
     background-color: #fff;
-    margin-top: 150px;
     padding: 20px;
-    margin-left: 250px; /* Largura da sidebar */
 }
 
-.barcode-checker {
-    max-width: 600px;
-    margin: 0 auto;
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.grid-item {
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
     text-align: center;
+    margin: 10px;
 }
 
-.barcode-checker label {
+h2 {
+    margin-top: 0;
+}
+
+.grid-item label {
     display: block;
     margin-top: 10px;
 }
 
-.barcode-checker input {
+.grid-item input {
     padding: 10px;
     margin-top: 5px;
     margin-bottom: 10px;
@@ -78,7 +59,9 @@ main {
     box-sizing: border-box;
 }
 
-#checkButton {
+button {
+    margin-top: 10px;
+    margin-bottom: 10px; /* Espaço entre botões */
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
@@ -86,29 +69,26 @@ main {
     color: white;
     border: none;
     border-radius: 4px;
+    display: block;
+    width: fit-content; /* Ajusta largura ao conteúdo */
+    margin: 0 auto; /* Centraliza horizontalmente */
 }
 
-#checkButton:hover {
+#checkButtonBarcode, #checkButtonPhone, #checkButtonCpf, #checkButtonEmail {
+    background-color: rgb(62, 187, 37);
+    font-size: 16px;
+}
+
+button:hover {
     background-color: #0056b3;
 }
 
-#result {
-    margin-top: 20px;
-    font-size: 18px;
-}
-
-button{
-    margin: 5px;
-    padding: 5px;
-    background-color: #17af12;
-    color: #f6f8f5;
-}
-
-label{
+label {
     text-align: left;
-    font-size: 30px;
-}
-h1{
-    text-align: center;
+    font-size: 20px;
 }
 
+/* Classe para destacar diferenças */
+.highlight {
+    background-color: yellow;
+}

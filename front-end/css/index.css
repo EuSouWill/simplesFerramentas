@@ -1,0 +1,113 @@
+/* Reset de estilos */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+/* Estilos gerais */
+body {
+    background-color: #f4f4f4;
+}
+
+.container {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #333;
+    color: #fff;
+    padding-top: 20px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    padding: 10px 20px;
+    border-bottom: 1px solid #555;
+}
+
+.sidebar ul li a {
+    color: #fff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar ul li a i {
+    margin-right: 10px;
+}
+
+main {
+    flex: 1;
+    background-color: #fff;
+    margin-top: 150px;
+    padding: 20px;
+    margin-left: 250px; /* Largura da sidebar */
+}
+
+.barcode-checker {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.barcode-checker label {
+    display: block;
+    margin-top: 10px;
+}
+
+.barcode-checker input {
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#checkButton {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+
+#checkButton:hover {
+    background-color: #0056b3;
+}
+
+#result {
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+button{
+    margin: 5px;
+    padding: 5px;
+    background-color: #17af12;
+    color: #f6f8f5;
+}
+
+label{
+    text-align: left;
+    font-size: 30px;
+}
+h1{
+    text-align: center;
+}
