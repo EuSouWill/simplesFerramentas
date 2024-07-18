@@ -162,3 +162,5 @@ function highlightDifferences(text1, text2, displayId1, displayId2) {
     document.getElementById(displayId1).innerHTML = highlightedText1;
     document.getElementById(displayId2).innerHTML = highlightedText2;
 }
+
+

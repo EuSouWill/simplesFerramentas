@@ -1,3 +1,36 @@
+/* Estilos para o menu lateral */
+.sidebar {
+    width: 250px;
+    background-color: #333;
+    color: #fff;
+    padding-top: 20px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    padding: 10px 20px;
+    border-bottom: 1px solid #555;
+}
+
+.sidebar ul li a {
+    color: #fff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar ul li a i {
+    margin-right: 10px;
+}
+
 /* Reset de estilos */
 * {
     margin: 0;
@@ -9,6 +42,7 @@
 /* Estilos gerais */
 body {
     background-color: #f4f4f4;
+    margin-left: 250px; /* Espaço para o menu lateral */
 }
 
 .container {
