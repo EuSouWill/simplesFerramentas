@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Upgrade de Plano</title>
+    <link rel="stylesheet" href="/front-end/css/upgrade.css">
+</head>
+<body>
+    <nav class="sidebar">
+        <ul>
+            <li><a href="/index.html"><i class="fas fa-home"></i>Home</a></li>
+            <li><a href="/front-end/html/verificador.html"><i class="fas fa-calculator"></i>Verificador de Dados</a></li>
+            <li><a href="/front-end/html/upgrade.html"><i class="fas fa-calendar-alt"></i> Calculadora Upgrade Anual</a></li>            
+            <li><a href="/front-end/html/calculadora.html"><i class="fas fa-calculator"></i>Calculadora de Juros</a></li>
+            <li><a href="/front-end/html/sugestoes.html"><i class="fas fa-comment-dots"></i> Sugestão de Melhoria</a></li>
+
+        </ul>
+    </nav>
+    <div class="container">
+        <h1>Calculadora de Upgrade de Plano Anual</h1>
+        <form id="upgradeForm">
+            <div class="form-group">
+                <label for="currentPlanValue">Valor do Plano Atual (R$):</label>
+                <input type="text" id="currentPlanValue" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="startDate">Data de Contratação do Plano:</label>
+                <input type="date" id="startDate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="newPlanValue">Valor do Novo Plano (R$):</label>
+                <input type="text" id="newPlanValue" required>
+            </div>
+
+            <button type="button" onclick="calculateUpgrade()">Calcular Upgrade</button>
+        </form>
+
+        <div id="result" class="result">
+            <!-- Resultados serão atualizados aqui -->
+        </div>
+    </div>
+
+    <script src="/javascript/upgrade.js"></script>
+</body>
+</html>
