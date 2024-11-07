@@ -28,7 +28,8 @@ function calculateUpgrade() {
     let timeUsed = Math.floor((currentDate - startDate) / (1000 * 60 * 60 * 24 * 30)); // meses completos
     const isCurrentMonthUsed = currentDate.getDate() >= startDate.getDate(); // Verifica se o mês atual já foi "pago"
 
-    if (isCurrentMonthUsed) {
+    // Sistema pré-pago: considera o mês atual como utilizado, se estamos no mês seguinte ao início
+    if (isCurrentMonthUsed || currentDate.getMonth() !== startDate.getMonth()) {
         timeUsed++; // Considera o mês atual como utilizado no sistema pré-pago
     }
 
@@ -39,29 +40,35 @@ function calculateUpgrade() {
         return;
     }
 
-    // Calcular o valor mensal do plano atual
-    const monthlyValue = currentPlanValue / 12;
+    // Valor exato por mês com 4 casas decimais para evitar erros de arredondamento
+    const monthlyValueExact = currentPlanValue / 12;
     
-    // Calcular o total gasto nos meses já utilizados
-    const totalUsed = monthlyValue * timeUsed;
-
-    // Calcular o saldo proporcional dos meses não utilizados
-    const remainingValue = monthlyValue * timeRemaining;
-
-    // Calcular a diferença entre o novo plano e o saldo restante
-    const upgradeCost = newPlanValue - remainingValue;
-
-    // Gerar a descrição dos meses utilizados de maneira mais amigável
+    // Calcular o valor total gasto até agora com precisão
+    let totalUsed = 0;
     let monthsDetails = '<ul>';
+
     for (let i = 0; i < timeUsed; i++) {
         const usedDate = new Date(startDate);
         usedDate.setMonth(usedDate.getMonth() + i);
-        monthsDetails += `<li><span>${usedDate.toLocaleDateString('pt-BR')}:</span> Utilizou <span>${formatCurrency(monthlyValue)}</span></li>`;
+        
+        // Arredonda o valor apenas ao final, mas mantém o valor exato durante o cálculo
+        totalUsed += monthlyValueExact;
+        
+        monthsDetails += `<li>${usedDate.toLocaleDateString('pt-BR')}: Utilizou ${formatCurrency(monthlyValueExact)}</li>`;
     }
-    monthsDetails += '</ul>';
+    
+    // Arredondar o total usado ao final para 2 casas decimais
+    totalUsed = Math.round(totalUsed * 100) / 100;
+    
+    // Calcular o saldo restante
+    const remainingValue = Math.round((currentPlanValue - totalUsed) * 100) / 100;
 
+    // Calcular a diferença entre o novo plano e o saldo restante
+    let upgradeCost = newPlanValue - remainingValue;
+
+    
     // Exibir os resultados detalhados
-    let resultMessage = `Você utilizou ${timeUsed} meses, pagando ${formatCurrency(monthlyValue)} por mês. <br>`;
+    let resultMessage = `Você utilizou ${timeUsed} meses, pagando ${formatCurrency(monthlyValueExact)} por mês. <br>`;
     resultMessage += `Valor total gasto até agora: ${formatCurrency(totalUsed)}. <br>`;
     resultMessage += `Você ainda tem ${timeRemaining} meses restantes, com um saldo de ${formatCurrency(remainingValue)}. <br>`;
     resultMessage += monthsDetails;
