@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Upgrade de Plano</title>
     <link rel="stylesheet" href="/front-end/css/upgrade.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    
 </head>
 <body>
     <nav class="sidebar">
@@ -14,35 +20,66 @@
             <li><a href="/front-end/html/upgrade.html"><i class="fas fa-calendar-alt"></i> Calculadora Upgrade Anual</a></li>            
             <li><a href="/front-end/html/calculadora.html"><i class="fas fa-calculator"></i>Calculadora de Juros</a></li>
             <li><a href="/front-end/html/sugestoes.html"><i class="fas fa-comment-dots"></i> Sugestão de Melhoria</a></li>
-
         </ul>
     </nav>
-    <div class="container">
-        <h1>Calculadora de Upgrade de Plano Anual</h1>
-        <form id="upgradeForm">
-            <div class="form-group">
-                <label for="currentPlanValue">Valor do Plano Atual (R$):</label>
-                <input type="text" id="currentPlanValue" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="startDate">Data de Contratação do Plano:</label>
-                <input type="date" id="startDate" required>
-            </div>
+    <div class="main-content">
+        <div class="container">
+            <h1>Calculadora de Upgrade de Plano Anual</h1>
+            <form id="upgradeForm">
+                <div class="form-group">
+                    <label for="currentPlanValue">Valor do Plano Atual (R$):</label>
+                    <input type="text" id="currentPlanValue" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="startDate">Data de Contratação do Plano:</label>
+                    <input type="date" id="startDate" required>
+                </div>
 
-            <div class="form-group">
-                <label for="newPlanValue">Valor do Novo Plano (R$):</label>
-                <input type="text" id="newPlanValue" required>
+                <div class="form-group">
+                    <label for="newPlanValue">Valor do Novo Plano (R$):</label>
+                    <input type="text" id="newPlanValue" required>
+                </div>
+
+                <button type="button" onclick="calculateUpgrade()">Calcular Upgrade</button>
+            </form>
+
+            <div id="upgradeResult" class="result">
+                <!-- Resultados da calculadora de upgrade serão atualizados aqui -->
             </div>
-
-            <button type="button" onclick="calculateUpgrade()">Calcular Upgrade</button>
-        </form>
-
-        <div id="result" class="result">
-            <!-- Resultados serão atualizados aqui -->
         </div>
+
+        <div class="container">
+            <h1>Calculadora de duração de plano anual</h1>
+            <label for="start-date">Data de Início do Plano:</label>
+            <input type="date" id="start-date">
+        
+            <div class="result" id="end-date-result"></div>
+        </div>
+
+        <div class="calculator">
+            <h1>Calculadora de Compras no Cartão de Crédito</h1>
+            <label for="purchaseDate">Data da Compra:</label>
+            <input type="date" id="purchaseDate" required>
+    
+            <label for="installments">Quantidade de Parcelas:</label>
+            <input type="number" id="installments" min="1" required>
+    
+            <label for="closingDate">Data de Fechamento da Fatura (dia):</label>
+            <input type="number" id="closingDate" min="1" max="31" required>
+    
+            <button onclick="calculateDueDates()">Calcular</button>
+    
+            <div id="creditCardResult" class="result">
+                <!-- Resultados da calculadora de cartão de crédito serão atualizados aqui -->
+            </div>
+        </div>
+
     </div>
 
+    
+
     <script src="/javascript/upgrade.js"></script>
+  
 </body>
 </html>

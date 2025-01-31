@@ -1,15 +1,3 @@
-// Função para formatar valores como moeda (R$)
-function formatCurrency(value) {
-    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-}
-
-// Função para formatar inputs como moeda automaticamente
-function formatInputToCurrency(input) {
-    let value = input.value.replace(/\D/g, ""); // Remove qualquer caractere não numérico
-    value = (value / 100).toFixed(2); // Converte para valor decimal
-    input.value = formatCurrency(Number(value)); // Aplica o formato de moeda
-}
-
 // Função para calcular o upgrade
 function calculateUpgrade() {
     // Pegar valores de entrada e remover formatação para cálculo
@@ -19,7 +7,7 @@ function calculateUpgrade() {
 
     // Verifica se todos os valores estão preenchidos corretamente
     if (isNaN(currentPlanValue) || isNaN(newPlanValue) || isNaN(startDate.getTime())) {
-        document.getElementById('result').textContent = 'Por favor, preencha todos os campos corretamente.';
+        document.getElementById('upgradeResult').textContent = 'Por favor, preencha todos os campos corretamente.';
         return;
     }
 
@@ -36,7 +24,7 @@ function calculateUpgrade() {
     const timeRemaining = 12 - timeUsed; // meses restantes
 
     if (timeRemaining <= 0) {
-        document.getElementById('result').textContent = 'O plano já expirou. Não é possível fazer o upgrade.';
+        document.getElementById('upgradeResult').textContent = 'O plano já expirou. Não é possível fazer o upgrade.';
         return;
     }
 
@@ -66,7 +54,6 @@ function calculateUpgrade() {
     // Calcular a diferença entre o novo plano e o saldo restante
     let upgradeCost = newPlanValue - remainingValue;
 
-    
     // Exibir os resultados detalhados
     let resultMessage = `Você utilizou ${timeUsed} meses, pagando ${formatCurrency(monthlyValueExact)} por mês. <br>`;
     resultMessage += `Valor total gasto até agora: ${formatCurrency(totalUsed)}. <br>`;
@@ -79,8 +66,8 @@ function calculateUpgrade() {
         resultMessage += `Você não precisa pagar nada, pois o saldo do plano atual cobre o valor do novo plano.`;
     }
 
-    // Atualizar o conteúdo da div de resultados
-    document.getElementById('result').innerHTML = resultMessage;
+    // Atualizar o conteúdo da div de resultados específica da calculadora de upgrade
+    document.getElementById('upgradeResult').innerHTML = resultMessage;
 }
 
 // Adicionar o evento de formatação de moeda aos inputs
@@ -90,4 +77,69 @@ document.getElementById('currentPlanValue').addEventListener('input', function()
 
 document.getElementById('newPlanValue').addEventListener('input', function() {
     formatInputToCurrency(this);
+});
+
+// Função para calcular as datas de vencimento das parcelas
+function calculateDueDates() {
+    const purchaseDate = new Date(document.getElementById('purchaseDate').value);
+    const installments = parseInt(document.getElementById('installments').value);
+    const closingDay = parseInt(document.getElementById('closingDate').value);
+
+    if (isNaN(purchaseDate.getTime()) || isNaN(installments) || isNaN(closingDay)) {
+        document.getElementById('creditCardResult').innerHTML = 'Por favor, preencha todos os campos corretamente.';
+        return;
+    }
+
+    let results = '';
+    let firstDueDate = new Date(purchaseDate);
+
+    // Ajusta o primeiro vencimento
+    if (purchaseDate.getDate() > closingDay) {
+        firstDueDate.setMonth(firstDueDate.getMonth() + 1); // Vai para o próximo mês
+    }
+    firstDueDate.setDate(closingDay + 10); // Define o dia de vencimento
+
+    // Gera as datas de vencimento
+    for (let i = 0; i < installments; i++) {
+        const dueDate = new Date(firstDueDate); // Clona a data inicial
+        dueDate.setMonth(firstDueDate.getMonth() + i); // Incrementa os meses
+        
+        // Adiciona a parcela ao resultado
+        results += `Parcela ${i + 1}: Vencimento em ${dueDate.toLocaleDateString('pt-BR')}<br>`;
+    }
+
+    document.getElementById('creditCardResult').innerHTML = results;
+}
+
+
+// Função para formatar o valor monetário
+function formatCurrency(value) {
+    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+// Função para formatar o input como moeda enquanto o usuário digita
+function formatInputToCurrency(input) {
+    let value = input.value.replace(/\D/g, '');
+    value = (parseInt(value) / 100).toFixed(2);
+    input.value = formatCurrency(parseFloat(value));
+}
+
+document.getElementById('start-date').addEventListener('change', function() {
+    const startDateInput = this.value;
+    
+    if (startDateInput) {
+        const startDate = new Date(startDateInput);
+        const endDate = new Date(startDate);
+        
+        // Adiciona 1 ano à data de início
+        endDate.setFullYear(endDate.getFullYear() + 1);
+
+        // Formata a data de término para 'dd/mm/yyyy'
+        const formattedEndDate = endDate.toLocaleDateString('pt-BR');
+
+        // Exibe a data de término no elemento de resultado
+        document.getElementById('end-date-result').textContent = `Data de Término do Plano: ${formattedEndDate}`;
+    } else {
+        document.getElementById('end-date-result').textContent = '';
+    }
 });

@@ -1,10 +1,12 @@
+/* Estilos Globais */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
 }
 
+/* Barra Lateral */
 .sidebar {
     width: 250px;
     background-color: #333;
@@ -37,15 +39,24 @@
     margin-right: 10px;
 }
 
+/* Corpo Principal */
 body {
     display: flex;
-    justify-content: center;
-    align-items: center;
     height: 100vh;
     background-color: #f4f4f4;
-    margin-left: 250px; /* Ajuste para dar espaço para a sidebar */
+    margin: 0;
 }
 
+.main-content {
+    margin-left: 250px; /* Ajuste para dar espaço para a sidebar */
+    padding: 20px;
+    width: calc(100% - 250px);
+    display: flex;
+    align-items: flex-start;
+    overflow-y: auto;
+}
+
+/* Container de Formulários */
 .container {
     background-color: white;
     padding: 20px;
@@ -53,6 +64,7 @@ body {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     max-width: 400px;
     width: 100%;
+    margin: 10px;
 }
 
 h1 {
@@ -93,13 +105,14 @@ button:hover {
     background-color: #45a049;
 }
 
+/* Resultados */
 .result {
     margin-top: 20px;
     padding: 10px;
     background-color: #f0f0f0;
     border-radius: 4px;
     text-align: left;
-    font-weight: normal; /* Remover o negrito */
+    font-weight: normal;
 }
 
 .result ul {
@@ -109,10 +122,63 @@ button:hover {
 
 .result li {
     margin-bottom: 10px;
-    font-size: 14px; /* Fonte um pouco menor para legibilidade */
+    font-size: 14px;
 }
 
 .result li span {
-    font-weight: bold; /* Aplicar negrito apenas para as datas e valores */
+    font-weight: bold;
     color: #333;
+}
+
+/* Calculadora de Compras no Cartão de Crédito */
+.calculator {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 100%;
+    margin: 10px;
+}
+
+h2 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.calculator label {
+    display: block;
+    margin-top: 10px;
+    color: #555;
+}
+
+.calculator input {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.calculator button {
+    margin-top: 20px;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.calculator button:hover {
+    background-color: #0056b3;
+}
+
+/* Responsividade */
+@media screen and (max-width: 768px) {
+    .main-content {
+        flex-direction: column;
+        align-items: center;
+    }
 }
