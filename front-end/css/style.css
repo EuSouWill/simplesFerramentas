@@ -69,6 +69,36 @@ main {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+body { text-align: center; font-family: Arial, sans-serif; }
+#dropArea {
+    width: 100%;
+    max-width: 400px;
+    height: 200px;
+    border: 2px dashed #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px auto;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    color: #666;
+}
+#dropArea.hover {
+    background-color: #e0e0e0;
+}
+#preview {
+    width: 100%;
+    max-width: 400px;
+    margin: auto;
+    display: none;
+    border: 2px solid #333;
+}
+#codigo {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
 h1 {
     text-align: center;
     margin: 10px;
