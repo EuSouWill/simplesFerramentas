@@ -163,4 +163,106 @@ function highlightDifferences(text1, text2, displayId1, displayId2) {
     document.getElementById(displayId2).innerHTML = highlightedText2;
 }
 
+const dropArea = document.getElementById('dropArea');
+const inputImagem = document.getElementById('inputImagem');
+let imagemSelecionada = null;
 
+// Clique para abrir seletor de arquivos
+dropArea.addEventListener('click', () => inputImagem.click());
+
+// Monitorar seleção de arquivo via input
+inputImagem.addEventListener('change', (e) => carregarImagem(e.target.files[0]));
+
+// Arrastar e soltar
+dropArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropArea.classList.add('hover');
+});
+
+dropArea.addEventListener('dragleave', () => {
+    dropArea.classList.remove('hover');
+});
+
+dropArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropArea.classList.remove('hover');
+    if (e.dataTransfer.files.length > 0) {
+        carregarImagem(e.dataTransfer.files[0]);
+    }
+});
+
+// Permitir colar imagem (Ctrl+V)
+document.addEventListener('paste', (e) => {
+    const items = e.clipboardData.items;
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+            const blob = items[i].getAsFile();
+            carregarImagem(blob);
+            break;
+        }
+    }
+});
+
+// Carrega a imagem e exibe no preview
+function carregarImagem(file) {
+    if (!file || !file.type.startsWith('image/')) {
+        alert('Por favor, selecione uma imagem válida!');
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        imagemSelecionada = event.target.result;
+        const img = document.getElementById('preview');
+        img.src = imagemSelecionada;
+        img.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+}
+
+// Processa a imagem com Tesseract
+function processarImagem() {
+    if (!imagemSelecionada) {
+        alert('Selecione ou arraste uma imagem antes de processar!');
+        return;
+    }
+
+    document.querySelector("#codigo span").textContent = "Processando...";
+
+    Tesseract.recognize(
+        imagemSelecionada,
+        'eng', // idioma - manter 'eng' para códigos numéricos
+        {
+            logger: info => console.log(info)
+        }
+    ).then(({ data: { text } }) => {
+        const numerosExtraidos = text.replace(/[^0-9]/g, '');
+        if (numerosExtraidos) {
+            document.querySelector("#codigo span").textContent = numerosExtraidos;
+        } else {
+            document.querySelector("#codigo span").textContent = "Nenhum número detectado!";
+        }
+    }).catch(err => {
+        console.error(err);
+        document.querySelector("#codigo span").textContent = "Erro ao processar imagem!";
+    });
+}
+
+
+function copiarCodigo() {
+    var codigoTexto = document.getElementById("codigoExtraido").innerText;
+    
+    if (codigoTexto.trim() === "-") {
+        alert("Nenhum código extraído para copiar.");
+        return;
+    }
+
+    navigator.clipboard.writeText(codigoTexto).then(() => {
+        var btnCopiar = document.getElementById("btnCopiar");
+        btnCopiar.innerText = "Copiado!";
+        setTimeout(() => {
+            btnCopiar.innerText = "Copiar Código";
+        }, 2000);
+    }).catch(err => {
+        console.error("Erro ao copiar código: ", err);
+    });
+}
