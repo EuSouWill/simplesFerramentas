@@ -38,6 +38,20 @@
                     <br>
                     <button id="checkButtonBarcode">Verificar</button>
                     <p id="resultBarcode"></p>
+               
+                </div>
+                <div class="grid-item">
+                    <h2>Processador de imagens</h2>
+                    <input type="file" id="inputImagem" accept="image/*" style="display:none">
+                    <div id="dropArea">Arraste e solte a imagem aqui ou clique para selecionar</div>
+                    <img id="preview" src="#" alt="Imagem carregada" style="max-width: 100%; display: none;"><br>
+                    
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button onclick="processarImagem()">Processar</button>
+                        <button id="btnCopiar" onclick="copiarCodigo()">Copiar Código</button>
+                    </div>
+                
+                    <p id="codigo"><strong>Código:</strong> <span id="codigoExtraido">-</span></p>
                 </div>
                 <div class="grid-item">
                     <h2>Verificação de Telefones</h2>
@@ -90,6 +104,8 @@
             </div>
         </main>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2"></script>
+
     <script src="/javascript/script.js"></script>
 </body>
 </html>
