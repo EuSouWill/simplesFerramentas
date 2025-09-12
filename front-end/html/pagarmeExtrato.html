@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processador de Extratos</title>
+    <link rel="stylesheet" href="/front-end/css/pagarmeExtrato.css">
+    <!-- Adicionar biblioteca jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💳 Processador de Extratos</h1>
+            <p>Processe seus extratos CSV com facilidade</p>
+        </div>
+
+        <div class="upload-section">
+            <div class="file-input-wrapper">
+                <input type="file" id="fileInput" class="file-input" accept=".csv" multiple>
+                <button class="file-input-button" onclick="document.getElementById('fileInput').click()">
+                    📁 Selecionar Arquivos CSV
+                </button>
+            </div>
+            <div class="file-name" id="fileName"></div>
+            <button class="process-button" id="processButton" onclick="processFiles()" disabled>
+                🔄 Processar Extratos
+            </button>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Processando arquivos...</p>
+            </div>
+
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+        </div>
+
+        <div class="results-section" id="resultsSection">
+            <div class="totals" id="totals"></div>
+            
+            <!-- Controles de colunas -->
+            <div class="column-controls">
+                <h4>🔧 Gerenciar Colunas:</h4>
+                <div class="column-toggles" id="columnToggles">
+                    <!-- Checkboxes serão criados dinamicamente -->
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table id="resultsTable">
+                    <thead>
+                        <tr id="tableHeader">
+                            <th>Data da Operação</th>
+                            <th>Nome do Paciente</th>
+                            <th>Método de Pagamento</th>
+                            <th>Entrada Líquida</th>
+                            <th>ID da Transação</th>
+                            <th>Valor Original</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="download-section">
+                <button class="download-button" onclick="downloadCSV()">
+                    💾 Download CSV
+                </button>
+                <button class="download-button pdf-button" onclick="downloadPDF()">
+                    📄 Download PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/javascript/pagarmeExtrato.js"></script>
+</body>
+</html>
