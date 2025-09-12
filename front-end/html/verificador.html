@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simples Ferramentas</title>
     <link rel="stylesheet" href="/front-end/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Incluindo a biblioteca Tesseract.js -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2/dist/tesseract.min.js"></script>
 </head>
 <body>
     <nav class="sidebar">
@@ -13,10 +15,9 @@
             <li><a href="/index.html"><i class="fas fa-home"></i>Home</a></li>
             <li><a href="/front-end/html/verificador.html"><i class="fas fa-calculator"></i>Verificador de Dados</a></li>
             <li><a href="/front-end/html/upgrade.html"><i class="fas fa-calendar-alt"></i> Calculadora Upgrade Anual</a></li>
-            
             <li><a href="/front-end/html/calculadora.html"><i class="fas fa-calculator"></i>Calculadora de Juros</a></li>
             <li><a href="/front-end/html/sugestoes.html"><i class="fas fa-comment-dots"></i> Sugestão de Melhoria</a></li>
-
+            <li><a href="/front-end/html/pagarmeExtrato.html"><i class="fas fa-comment-dots"></i> Extrato Pagarme</a></li>
         </ul>
     </nav>
     <div class="container">
@@ -38,20 +39,28 @@
                     <br>
                     <button id="checkButtonBarcode">Verificar</button>
                     <p id="resultBarcode"></p>
-               
                 </div>
                 <div class="grid-item">
-                    <h2>Processador de imagens</h2>
-                    <input type="file" id="inputImagem" accept="image/*" style="display:none">
-                    <div id="dropArea">Arraste e solte a imagem aqui ou clique para selecionar</div>
-                    <img id="preview" src="#" alt="Imagem carregada" style="max-width: 100%; display: none;"><br>
-                    
+                    <h2>Processador de Imagens</h2>
+                    <input type="file" id="inputImagemCodigo" accept="image/*" style="display:none">
+                    <div id="dropAreaCodigo">Arraste e solte a imagem aqui ou clique para selecionar</div>
+                    <img id="previewCodigo" src="#" alt="Imagem carregada" style="max-width: 100%; display: none;"><br>
                     <div style="display: flex; gap: 10px; margin-top: 10px;">
-                        <button onclick="processarImagem()">Processar</button>
-                        <button id="btnCopiar" onclick="copiarCodigo()">Copiar Código</button>
+                        <button onclick="processarImagemCodigo()">Processar</button>
+                        <button id="btnCopiar" onclick="copiarCodigoExtraido()">Copiar Código</button>
                     </div>
-                
                     <p id="codigo"><strong>Código:</strong> <span id="codigoExtraido">-</span></p>
+                </div>
+                <div class="grid-item">
+                    <h2>Processador de Texto</h2>
+                    <input type="file" id="inputImagemTexto" accept="image/*" style="display:none">
+                    <div id="dropAreaTexto">Arraste e solte a imagem aqui ou clique para selecionar</div>
+                    <img id="previewTexto" src="#" alt="Imagem carregada" style="max-width: 100%; display: none;"><br>
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button onclick="processarImagemTexto()">Processar</button>
+                        <button id="btnCopiarTexto" onclick="copiarTextoExtraido('textoExtraido')">Copiar Texto</button>
+                    </div>
+                    <p id="texto"><strong>Texto Completo:</strong> <span id="textoExtraido">-</span></p>
                 </div>
                 <div class="grid-item">
                     <h2>Verificação de Telefones</h2>
@@ -105,7 +114,6 @@
         </main>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2"></script>
-
     <script src="/javascript/script.js"></script>
 </body>
 </html>
