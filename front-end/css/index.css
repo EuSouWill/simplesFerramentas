@@ -33,10 +33,7 @@ body {
     padding: 0;
 }
 
-.sidebar ul li {
-    padding: 10px 20px;
-    border-bottom: 1px solid #555;
-}
+
 
 .sidebar ul li a {
     color: #fff;

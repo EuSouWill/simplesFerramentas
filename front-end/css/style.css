@@ -15,10 +15,7 @@
     padding: 0;
 }
 
-.sidebar ul li {
-    padding: 10px 20px;
-    border-bottom: 1px solid #555;
-}
+
 
 .sidebar ul li a {
     color: #fff;
@@ -55,6 +52,8 @@ main {
     flex: 1;
     background-color: #fff;
     padding: 20px;
+    text-align: center;
+    font-family: Arial, sans-serif;
 }
 
 .grid-container {
@@ -69,8 +68,7 @@ main {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-body { text-align: center; font-family: Arial, sans-serif; }
-#dropArea {
+#dropArea, #dropAreaCodigo, #dropAreaTexto {
     width: 100%;
     max-width: 400px;
     height: 200px;
@@ -83,16 +81,19 @@ body { text-align: center; font-family: Arial, sans-serif; }
     cursor: pointer;
     color: #666;
 }
-#dropArea.hover {
+
+#dropArea.hover, #dropAreaCodigo.hover, #dropAreaTexto.hover {
     background-color: #e0e0e0;
 }
-#preview {
+
+#preview, #previewCodigo, #previewTexto {
     width: 100%;
     max-width: 400px;
     margin: auto;
     display: none;
     border: 2px solid #333;
 }
+
 #codigo {
     font-size: 20px;
     font-weight: bold;

@@ -68,7 +68,7 @@ class MenuManager {
                     `).join('')}
                 </ul>
                 <div class="sidebar-footer">
-                    <p>&copy; 2024 Simples Dental</p>
+                    <p>&copy; 2025 Simples Dental</p>
                 </div>
             </nav>
         `;
