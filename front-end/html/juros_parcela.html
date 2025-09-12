@@ -4,51 +4,47 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Calculadora de Parcelamento</title>
-  <link rel="stylesheet" href="/front-end//css/juros_parcela.css" />
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="/front-end/css/juros_parcela.css" />
+  <link rel="stylesheet" href="/front-end/css/menu.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
-  <nav class="sidebar">
-    <ul>
-      <li><a href="/index.html"><i class="fas fa-home"></i>Home</a></li>
-      <li><a href="/front-end/html/verificador.html"><i class="fas fa-calculator"></i>Verificador de Dados</a></li>
-      <li><a href="/front-end/html/upgrade.html"><i class="fas fa-calendar-alt"></i> Calculadora Upgrade Anual</a></li>            
-      <li><a href="/front-end/html/calculadora.html"><i class="fas fa-calculator"></i>Calculadora de Juros</a></li>
-      <li><a href="/front-end/html/pagarmeExtrato.html"><i class="fas fa-comment-dots"></i> Extrato Pagarme</a></li>
-      <li><a href="/front-end/html/sugestoes.html"><i class="fas fa-comment-dots"></i> Sugestão de Melhoria</a></li>
-    </ul>
-  </nav>
-
-  <div class="container">
-    <h1>Calculadora de Parcelamento</h1>
-
-    <label>Valor da Venda (R$)</label>
-    <input type="text" id="valor" placeholder="Ex: 1.000,00" oninput="formatarMoeda(this)">
-
-    <label>Número de Parcelas</label>
-    <input type="number" id="parcelas" min="1" placeholder="Ex: 6">
-
-    <label>Juros ao Mês (%)</label>
-    <input type="number" id="juros" step="0.01" placeholder="Ex: 2.5">
-
-    <label>Taxa Administrativa (%)</label>
-    <input type="number" id="taxa" step="0.01" placeholder="Ex: 4.99">
-
-    <label>Quem paga o juros?</label>
-    <select id="quemPaga">
-      <option value="cliente">Cliente</option>
-      <option value="lojista">Lojista</option>
-    </select>
-
-    <label>Data da 1ª Parcela</label>
-    <input type="date" id="dataInicial">
-
-    <button onclick="calcular()">Calcular</button>
-
-    <div class="error" id="erro"></div>
-    <div class="result" id="resultado"></div>
+  <!-- Botão toggle para mobile -->
+  <button class="mobile-menu-toggle" onclick="toggleSidebar()" style="display: none;">
+    <i class="fas fa-bars"></i>
+  </button>
+  
+  <!-- Overlay para mobile -->
+  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+  
+  <!-- Container do menu será inserido automaticamente aqui -->
+  
+  <div class="main-content">
+    <div class="container">
+      <h1>Calculadora de Parcelamento</h1>
+      <label>Valor da Venda (R$)</label>
+      <input type="text" id="valor" placeholder="Ex: 1.000,00" oninput="formatarMoeda(this)">
+      <label>Número de Parcelas</label>
+      <input type="number" id="parcelas" min="1" placeholder="Ex: 6">
+      <label>Juros ao Mês (%)</label>
+      <input type="number" id="juros" step="0.01" placeholder="Ex: 2.5">
+      <label>Taxa Administrativa (%)</label>
+      <input type="number" id="taxa" step="0.01" placeholder="Ex: 4.99">
+      <label>Quem paga o juros?</label>
+      <select id="quemPaga">
+        <option value="cliente">Cliente</option>
+        <option value="lojista">Lojista</option>
+      </select>
+      <label>Data da 1ª Parcela</label>
+      <input type="date" id="dataInicial">
+      <button onclick="calcular()">Calcular</button>
+      <div class="error" id="erro"></div>
+      <div class="result" id="resultado"></div>
+    </div>
   </div>
-
+  
+  <!-- Scripts -->
+  <script src="/javascript/menu.js"></script>
   <script src="/javascript/juros_parcela.js"></script>
 </body>
 </html>
