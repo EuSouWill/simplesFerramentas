@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background: linear-gradient(135deg, #e0e3e6 0%, #84b8fb 100%);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -39,7 +39,7 @@ input {
 button {
     width: 100%;
     padding: 10px;
-    background-color: #007BFF;
+    background: linear-gradient(135deg, #7560bc 0%, #518cb7 100%);
     color: white;
     border: none;
     border-radius: 5px;

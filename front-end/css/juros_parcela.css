@@ -4,7 +4,7 @@
 
 body {
   font-family: 'Segoe UI', sans-serif;
-  background: #f0f2f5;
+  background: linear-gradient(135deg, #e0e3e6 0%, #84b8fb 100%);
   margin: 0;
   padding: 20px;
 }
@@ -47,7 +47,7 @@ button {
   margin-top: 25px;
   padding: 12px;
   width: 100%;
-  background: #007BFF;
+  background: linear-gradient(135deg, #7560bc 0%, #518cb7 100%);
   color: white;
   border: none;
   font-size: 16px;
