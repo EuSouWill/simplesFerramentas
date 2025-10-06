@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
+        <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XKT40XW9H7"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-XKT40XW9H7');
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Processador de Extratos</title>
@@ -49,6 +60,27 @@
             <div class="results-section" id="resultsSection">
                 <div class="totals" id="totals"></div>
                 
+                <!-- Botão para adicionar nova linha -->
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <button class="add-row-btn" onclick="showAddRowModal()">
+                        ➕ Adicionar Nova Transação
+                    </button>
+                </div>
+                
+                <!-- Controles de ordenação -->
+                <div class="sort-controls">
+                    <h4>📅 Ordenar por Data:</h4>
+                    <button class="sort-button active" onclick="sortDataByDate('original')">
+                        🔄 Ordem Original
+                    </button>
+                    <button class="sort-button" onclick="sortDataByDate('asc')">
+                        ⬆️ Data Crescente (Antiga → Nova)
+                    </button>
+                    <button class="sort-button" onclick="sortDataByDate('desc')">
+                        ⬇️ Data Decrescente (Nova → Antiga)
+                    </button>
+                </div>
+                
                 <!-- Controles de colunas -->
                 <div class="column-controls">
                     <h4>🔧 Gerenciar Colunas:</h4>
@@ -56,6 +88,7 @@
                         <!-- Checkboxes serão criados dinamicamente -->
                     </div>
                 </div>
+                
                 <div class="table-container">
                     <table id="resultsTable">
                         <thead>
@@ -86,8 +119,70 @@
         </div>
     </div>
     
+    <!-- Modal para adicionar/editar linha -->
+    <div id="rowModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Adicionar Nova Transação</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <form onsubmit="event.preventDefault(); saveRow();">
+                <div class="form-group">
+                    <label for="rowData">Data da Operação *</label>
+                    <input type="text" id="rowData" placeholder="dd/mm/aaaa" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="rowPaciente">Nome do Paciente</label>
+                    <input type="text" id="rowPaciente" placeholder="Digite o nome do paciente">
+                </div>
+                
+                <div class="form-group">
+                    <label for="rowMetodo">Método de Pagamento *</label>
+                    <select id="rowMetodo" required>
+                        <option value="saque">Saque</option>
+                        <option value="boleto">Boleto Bancário</option>
+                        <option value="estorno">Estorno</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="rowLiquido">Valor Líquido *</label>
+                    <input type="text" id="rowLiquido" placeholder="Ex: 100,50" required>
+                    <small style="color: #666; font-size: 12px;">
+                        Use vírgula como separador decimal (ex: 100,50)
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="rowTransacao">ID da Transação</label>
+                    <input type="text" id="rowTransacao" placeholder="ID opcional da transação">
+                </div>
+                
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">
+                        ❌ Cancelar
+                    </button>
+                    <button type="submit" class="btn-save">
+                        ✅ Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
     <!-- Scripts -->
     <script src="/javascript/menu.js"></script>
     <script src="/javascript/pagarmeExtrato.js"></script>
+    
+    <!-- Script para fechar modal clicando fora -->
+    <script>
+        window.onclick = function(event) {
+            const modal = document.getElementById('rowModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
 </body>
 </html>
