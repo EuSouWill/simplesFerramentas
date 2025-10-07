@@ -1,3 +1,6 @@
+// JavaScript Corrigido - PARTE 1/4
+
+// Verificações dos comparadores (mantido igual)
 document.getElementById("checkButtonBarcode").addEventListener("click", function() {
     var barcode1 = document.getElementById("barcode1").value;
     var barcode2 = document.getElementById("barcode2").value;
@@ -12,20 +15,6 @@ document.getElementById("checkButtonBarcode").addEventListener("click", function
     }
 });
 
-document.getElementById("checkButtonPhone").addEventListener("click", function() {
-    var phone1 = document.getElementById("phone1").value;
-    var phone2 = document.getElementById("phone2").value;
-    var result = document.getElementById("resultPhone");
-    if (phone1 === phone2) {
-        result.textContent = "Os números de telefone são iguais.";
-        result.style.color = "green";
-    } else {
-        result.textContent = "Os números de telefone são diferentes.";
-        result.style.color = "red";
-        highlightDifferences(phone1, phone2, "displayPhone1", "displayPhone2");
-    }
-});
-
 document.getElementById("checkButtonCpf").addEventListener("click", function() {
     var cpf1 = document.getElementById("cpf1").value;
     var cpf2 = document.getElementById("cpf2").value;
@@ -37,20 +26,6 @@ document.getElementById("checkButtonCpf").addEventListener("click", function() {
         result.textContent = "Os números de CPF/CNPJ são diferentes.";
         result.style.color = "red";
         highlightDifferences(cpf1, cpf2, "displayCpf1", "displayCpf2");
-    }
-});
-
-document.getElementById("checkButtonEmail").addEventListener("click", function() {
-    var email1 = document.getElementById("email1").value;
-    var email2 = document.getElementById("email2").value;
-    var result = document.getElementById("resultEmail");
-    if (email1 === email2) {
-        result.textContent = "Os e-mails são iguais.";
-        result.style.color = "green";
-    } else {
-        result.textContent = "Os e-mails são diferentes.";
-        result.style.color = "red";
-        highlightDifferences(email1, email2, "displayEmail1", "displayEmail2");
     }
 });
 
@@ -83,23 +58,11 @@ document.getElementById("barcode1").addEventListener("input", function() {
 document.getElementById("barcode2").addEventListener("input", function() {
     updateCharCount("barcode2");
 });
-document.getElementById("phone1").addEventListener("input", function() {
-    updateCharCount("phone1");
-});
-document.getElementById("phone2").addEventListener("input", function() {
-    updateCharCount("phone2");
-});
 document.getElementById("cpf1").addEventListener("input", function() {
     updateCharCount("cpf1");
 });
 document.getElementById("cpf2").addEventListener("input", function() {
     updateCharCount("cpf2");
-});
-document.getElementById("email1").addEventListener("input", function() {
-    updateCharCount("email1");
-});
-document.getElementById("email2").addEventListener("input", function() {
-    updateCharCount("email2");
 });
 
 // Botões de limpeza
@@ -109,23 +72,11 @@ document.getElementById("cleanButton1").addEventListener("click", function() {
 document.getElementById("cleanButton2").addEventListener("click", function() {
     cleanBarcode("barcode2");
 });
-document.getElementById("cleanButtonPhone1").addEventListener("click", function() {
-    cleanInput("phone1");
-});
-document.getElementById("cleanButtonPhone2").addEventListener("click", function() {
-    cleanInput("phone2");
-});
 document.getElementById("cleanButtonCpf1").addEventListener("click", function() {
     cleanInput("cpf1");
 });
 document.getElementById("cleanButtonCpf2").addEventListener("click", function() {
     cleanInput("cpf2");
-});
-document.getElementById("cleanButtonEmail1").addEventListener("click", function() {
-    cleanInput("email1");
-});
-document.getElementById("cleanButtonEmail2").addEventListener("click", function() {
-    cleanInput("email2");
 });
 
 // Destaque de diferenças
@@ -147,150 +98,292 @@ function highlightDifferences(text1, text2, displayId1, displayId2) {
     document.getElementById(displayId1).innerHTML = highlightedText1;
     document.getElementById(displayId2).innerHTML = highlightedText2;
 }
+
+// ===== PARTE DAS IMAGENS - VARIÁVEIS =====
+
 // Variáveis para imagens selecionadas
 let imagemSelecionadaTexto = null;
 let imagemSelecionadaCodigo = null;
 let ultimaAreaAtiva = 'codigo'; // Default
+// JavaScript Corrigido - PARTE 2/4
 
-// Eventos de clique para input de imagem
-document.getElementById("dropAreaTexto").addEventListener("click", () => {
-    ultimaAreaAtiva = 'texto';
-    document.getElementById("inputImagemTexto").click();
-});
-document.getElementById("dropAreaCodigo").addEventListener("click", () => {
-    ultimaAreaAtiva = 'codigo';
-    document.getElementById("inputImagemCodigo").click();
+// Aguardar DOM carregar
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM carregado');
+    
+    // Configurar eventos das áreas de drop
+    configurarEventosImagem();
+    
+    // Configurar drag and drop
+    configurarDragAndDrop();
+    
+    // Configurar colagem
+    configurarColagem();
 });
 
-// Eventos de mudança para inputs de arquivos
-document.getElementById("inputImagemTexto").addEventListener("change", (evento) => {
-    const arquivoTexto = evento.target.files[0];
-    if (arquivoTexto) {
-        carregarImagem(arquivoTexto, 'texto');
+function configurarEventosImagem() {
+    // Eventos de clique para áreas de drop
+    const dropAreaTexto = document.getElementById("dropAreaTexto");
+    const dropAreaCodigo = document.getElementById("dropAreaCodigo");
+    
+    if (dropAreaTexto) {
+        dropAreaTexto.addEventListener("click", () => {
+            console.log('Clique na área de texto');
+            ultimaAreaAtiva = 'texto';
+            const input = document.getElementById("inputImagemTexto");
+            if (input) {
+                input.click();
+            }
+        });
+        
+        dropAreaTexto.style.cursor = 'pointer';
+        dropAreaTexto.style.border = '2px dashed #ccc';
+        dropAreaTexto.style.padding = '20px';
+        dropAreaTexto.style.textAlign = 'center';
+        dropAreaTexto.style.borderRadius = '5px';
     }
-});
-document.getElementById("inputImagemCodigo").addEventListener("change", (evento) => {
-    const arquivoCodigo = evento.target.files[0];
-    if (arquivoCodigo) {
-        carregarImagem(arquivoCodigo, 'codigo');
+    
+    if (dropAreaCodigo) {
+        dropAreaCodigo.addEventListener("click", () => {
+            console.log('Clique na área de código');
+            ultimaAreaAtiva = 'codigo';
+            const input = document.getElementById("inputImagemCodigo");
+            if (input) {
+                input.click();
+            }
+        });
+        
+        dropAreaCodigo.style.cursor = 'pointer';
+        dropAreaCodigo.style.border = '2px dashed #ccc';
+        dropAreaCodigo.style.padding = '20px';
+        dropAreaCodigo.style.textAlign = 'center';
+        dropAreaCodigo.style.borderRadius = '5px';
     }
-});
+    
+    // Eventos de mudança para inputs de arquivos
+    const inputTexto = document.getElementById("inputImagemTexto");
+    const inputCodigo = document.getElementById("inputImagemCodigo");
+    
+    if (inputTexto) {
+        inputTexto.addEventListener("change", (evento) => {
+            console.log('Arquivo selecionado para texto');
+            const arquivo = evento.target.files[0];
+            if (arquivo) {
+                carregarImagem(arquivo, 'texto');
+            }
+        });
+    }
+    
+    if (inputCodigo) {
+        inputCodigo.addEventListener("change", (evento) => {
+            console.log('Arquivo selecionado para código');
+            const arquivo = evento.target.files[0];
+            if (arquivo) {
+                carregarImagem(arquivo, 'codigo');
+            }
+        });
+    }
+}
 
-// Função de carregamento de imagem
+// Função de carregamento de imagem - CORRIGIDA
 function carregarImagem(file, tipo) {
+    console.log(`Carregando imagem para: ${tipo}`);
+    
     if (!file || !file.type.startsWith('image/')) {
         alert('Por favor, selecione uma imagem válida!');
         return;
     }
+    
     const reader = new FileReader();
     reader.onload = function(event) {
+        console.log(`Imagem carregada com sucesso para: ${tipo}`);
+        
         if (tipo === 'texto') {
             imagemSelecionadaTexto = event.target.result;
-            document.getElementById("previewTexto").src = imagemSelecionadaTexto;
-            document.getElementById("previewTexto").style.display = "block";
+            const preview = document.getElementById("previewTexto");
+            if (preview) {
+                preview.src = imagemSelecionadaTexto;
+                preview.style.display = "block";
+            }
+            console.log('imagemSelecionadaTexto definida:', !!imagemSelecionadaTexto);
         } else if (tipo === 'codigo') {
             imagemSelecionadaCodigo = event.target.result;
-            document.getElementById("previewCodigo").src = imagemSelecionadaCodigo;
-            document.getElementById("previewCodigo").style.display = "block";
+            const preview = document.getElementById("previewCodigo");
+            if (preview) {
+                preview.src = imagemSelecionadaCodigo;
+                preview.style.display = "block";
+            }
+            console.log('imagemSelecionadaCodigo definida:', !!imagemSelecionadaCodigo);
         }
     };
+    
+    reader.onerror = function(error) {
+        console.error('Erro ao carregar imagem:', error);
+        alert('Erro ao carregar a imagem!');
+    };
+    
     reader.readAsDataURL(file);
 }
+// JavaScript Corrigido - PARTE 3/4
 
-// Eventos de arraste e solta
-document.getElementById('dropAreaTexto').addEventListener('dragover', (e) => {
-    e.preventDefault();
-    e.currentTarget.classList.add('hover');
-    ultimaAreaAtiva = 'texto';
-});
-document.getElementById('dropAreaTexto').addEventListener('dragleave', (e) => {
-    e.currentTarget.classList.remove('hover');
-});
-document.getElementById('dropAreaTexto').addEventListener('drop', (e) => {
-    e.preventDefault();
-    e.currentTarget.classList.remove('hover');
-    if (e.dataTransfer.files.length > 0) {
-        carregarImagem(e.dataTransfer.files[0], 'texto');
+// Configurar drag and drop
+function configurarDragAndDrop() {
+    const dropAreaTexto = document.getElementById('dropAreaTexto');
+    const dropAreaCodigo = document.getElementById('dropAreaCodigo');
+    
+    if (dropAreaTexto) {
+        dropAreaTexto.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.currentTarget.style.backgroundColor = '#f0f0f0';
+            ultimaAreaAtiva = 'texto';
+        });
+        
+        dropAreaTexto.addEventListener('dragleave', (e) => {
+            e.currentTarget.style.backgroundColor = '';
+        });
+        
+        dropAreaTexto.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.currentTarget.style.backgroundColor = '';
+            if (e.dataTransfer.files.length > 0) {
+                carregarImagem(e.dataTransfer.files[0], 'texto');
+            }
+        });
     }
-});
-document.getElementById('dropAreaCodigo').addEventListener('dragover', (e) => {
-    e.preventDefault();
-    e.currentTarget.classList.add('hover');
-    ultimaAreaAtiva = 'codigo';
-});
-document.getElementById('dropAreaCodigo').addEventListener('dragleave', (e) => {
-    e.currentTarget.classList.remove('hover');
-});
-document.getElementById('dropAreaCodigo').addEventListener('drop', (e) => {
-    e.preventDefault();
-    e.currentTarget.classList.remove('hover');
-    if (e.dataTransfer.files.length > 0) {
-        carregarImagem(e.dataTransfer.files[0], 'codigo');
+    
+    if (dropAreaCodigo) {
+        dropAreaCodigo.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.currentTarget.style.backgroundColor = '#f0f0f0';
+            ultimaAreaAtiva = 'codigo';
+        });
+        
+        dropAreaCodigo.addEventListener('dragleave', (e) => {
+            e.currentTarget.style.backgroundColor = '';
+        });
+        
+        dropAreaCodigo.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.currentTarget.style.backgroundColor = '';
+            if (e.dataTransfer.files.length > 0) {
+                carregarImagem(e.dataTransfer.files[0], 'codigo');
+            }
+        });
     }
-});
+}
 
-// Evento de colagem para imagem
-document.addEventListener('paste', (e) => {
-    const items = e.clipboardData.items;
-    for (let i = 0; i < items.length; i++) {
-        if (items[i].type.indexOf('image') !== -1) {
-            const blob = items[i].getAsFile();
-            carregarImagem(blob, ultimaAreaAtiva);
-            break;
+// Configurar colagem
+function configurarColagem() {
+    document.addEventListener('paste', (e) => {
+        console.log('Evento de colagem detectado');
+        const items = e.clipboardData.items;
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1) {
+                console.log('Imagem encontrada na área de transferência');
+                const blob = items[i].getAsFile();
+                carregarImagem(blob, ultimaAreaAtiva);
+                e.preventDefault(); // Impedir comportamento padrão
+                break;
+            }
         }
-    }
-});
+    });
+}
 
-// Funções de processamento
+// Funções de processamento - CORRIGIDAS
 function processarImagemTexto() {
+    console.log('processarImagemTexto chamada');
+    console.log('imagemSelecionadaTexto:', !!imagemSelecionadaTexto);
+    
     if (!imagemSelecionadaTexto) {
         alert("Selecione ou arraste uma imagem antes de processar!");
         return;
     }
-    document.getElementById("textoExtraido").textContent = "Processando...";
+    
+    // Corrigido: usar o ID correto do HTML
+    const spanTexto = document.getElementById("textoExtraido");
+    if (spanTexto) {
+        spanTexto.textContent = "Processando...";
+    }
+    
     Tesseract.recognize(
         imagemSelecionadaTexto,
         'por',
         { logger: info => console.log(info) }
     ).then(({ data: { text } }) => {
-        document.getElementById("textoExtraido").textContent = text.trim() || "Nenhum texto detectado!";
+        console.log('Texto extraído:', text);
+        if (spanTexto) {
+            spanTexto.textContent = text.trim() || "Nenhum texto detectado!";
+        }
     }).catch(err => {
-        console.error(err);
-        document.getElementById("textoExtraido").textContent = "Erro ao processar!";
+        console.error('Erro no Tesseract:', err);
+        if (spanTexto) {
+            spanTexto.textContent = "Erro ao processar!";
+        }
     });
 }
 
 function processarImagemCodigo() {
+    console.log('processarImagemCodigo chamada');
+    console.log('imagemSelecionadaCodigo:', !!imagemSelecionadaCodigo);
+    
     if (!imagemSelecionadaCodigo) {
         alert("Selecione ou arraste uma imagem antes de processar!");
         return;
     }
-    document.querySelector("#codigo span").textContent = "Processando...";
+    
+    // Corrigido: usar o ID correto do HTML
+    const spanCodigo = document.getElementById("codigoExtraido");
+    if (spanCodigo) {
+        spanCodigo.textContent = "Processando...";
+    }
+    
     Tesseract.recognize(
         imagemSelecionadaCodigo,
         'eng',
         { logger: info => console.log(info) }
     ).then(({ data: { text } }) => {
+        console.log('Texto bruto extraído:', text);
         const numerosExtraidos = text.replace(/[^0-9]/g, '');
-        if (numerosExtraidos) {
-            document.querySelector("#codigo span").textContent = numerosExtraidos;
-        } else {
-            document.querySelector("#codigo span").textContent = "Nenhum número detectado!";
+        console.log('Números extraídos:', numerosExtraidos);
+        
+        if (spanCodigo) {
+            if (numerosExtraidos) {
+                spanCodigo.textContent = numerosExtraidos;
+            } else {
+                spanCodigo.textContent = "Nenhum número detectado!";
+            }
         }
     }).catch(err => {
-        console.error(err);
-        document.querySelector("#codigo span").textContent = "Erro ao processar imagem!";
+        console.error('Erro no Tesseract:', err);
+        if (spanCodigo) {
+            spanCodigo.textContent = "Erro ao processar imagem!";
+        }
     });
 }
+// JavaScript Corrigido - PARTE 4/4
 
-// Funções para copiar dados extraídos
+// Funções para copiar dados extraídos - CORRIGIDAS
 function copiarTextoExtraido(id) {
-    const texto = document.getElementById(id).textContent;
-    if (texto !== "Processando..." && texto !== "Nenhum código detectado!" && texto !== "Nenhum texto detectado!") {
+    const elemento = document.getElementById(id);
+    if (!elemento) {
+        alert("Elemento não encontrado!");
+        return;
+    }
+    
+    const texto = elemento.textContent;
+    if (texto !== "Processando..." && texto !== "Nenhum texto detectado!" && texto !== "-" && texto.trim()) {
         navigator.clipboard.writeText(texto).then(() => {
             alert("Texto copiado para a área de transferência!");
         }).catch(err => {
             console.error("Erro ao copiar:", err);
+            // Fallback para navegadores mais antigos
+            const textArea = document.createElement('textarea');
+            textArea.value = texto;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            alert("Texto copiado!");
         });
     } else {
         alert("Não há texto extraído para copiar.");
@@ -298,18 +391,174 @@ function copiarTextoExtraido(id) {
 }
 
 function copiarCodigoExtraido() {
-    var codigoTexto = document.getElementById("codigoExtraido").innerText;
-    if (codigoTexto.trim() === "-") {
+    const codigoElemento = document.getElementById("codigoExtraido");
+    if (!codigoElemento) {
+        alert("Elemento de código não encontrado!");
+        return;
+    }
+    
+    const codigoTexto = codigoElemento.textContent;
+    if (codigoTexto.trim() === "-" || codigoTexto === "Processando..." || codigoTexto === "Nenhum número detectado!") {
         alert("Nenhum código extraído para copiar.");
         return;
     }
+    
     navigator.clipboard.writeText(codigoTexto).then(() => {
-        var btnCopiar = document.getElementById("btnCopiar");
-        btnCopiar.innerText = "Copiado!";
-        setTimeout(() => {
-            btnCopiar.innerText = "Copiar Código";
-        }, 2000);
+        const btnCopiar = document.getElementById("btnCopiar");
+        if (btnCopiar) {
+            const textoOriginal = btnCopiar.textContent;
+            btnCopiar.textContent = "Copiado!";
+            btnCopiar.style.backgroundColor = "#28a745";
+            setTimeout(() => {
+                btnCopiar.textContent = textoOriginal;
+                btnCopiar.style.backgroundColor = "";
+            }, 2000);
+        }
+        console.log("Código copiado:", codigoTexto);
     }).catch(err => {
-        console.error("Erro ao copiar código: ", err);
+        console.error("Erro ao copiar código:", err);
+        // Fallback para navegadores mais antigos
+        const textArea = document.createElement('textarea');
+        textArea.value = codigoTexto;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert("Código copiado!");
     });
 }
+
+// Função adicional para resetar as áreas de imagem
+function resetarAreaImagem(tipo) {
+    if (tipo === 'texto') {
+        imagemSelecionadaTexto = null;
+        const preview = document.getElementById("previewTexto");
+        const textoExtraido = document.getElementById("textoExtraido");
+        const input = document.getElementById("inputImagemTexto");
+        
+        if (preview) {
+            preview.style.display = "none";
+            preview.src = "#";
+        }
+        if (textoExtraido) {
+            textoExtraido.textContent = "-";
+        }
+        if (input) {
+            input.value = "";
+        }
+    } else if (tipo === 'codigo') {
+        imagemSelecionadaCodigo = null;
+        const preview = document.getElementById("previewCodigo");
+        const codigoExtraido = document.getElementById("codigoExtraido");
+        const input = document.getElementById("inputImagemCodigo");
+        
+        if (preview) {
+            preview.style.display = "none";
+            preview.src = "#";
+        }
+        if (codigoExtraido) {
+            codigoExtraido.textContent = "-";
+        }
+        if (input) {
+            input.value = "";
+        }
+    }
+}
+
+// Função para adicionar feedback visual durante o processamento
+function mostrarProcessando(tipo, mostrar = true) {
+    if (tipo === 'texto') {
+        const botao = document.querySelector('button[onclick="processarImagemTexto()"]');
+        if (botao) {
+            botao.disabled = mostrar;
+            botao.textContent = mostrar ? "Processando..." : "Processar";
+        }
+    } else if (tipo === 'codigo') {
+        const botao = document.querySelector('button[onclick="processarImagemCodigo()"]');
+        if (botao) {
+            botao.disabled = mostrar;
+            botao.textContent = mostrar ? "Processando..." : "Processar";
+        }
+    }
+}
+
+// Melhorar as funções de processamento com feedback visual
+function processarImagemTextoMelhorada() {
+    console.log('processarImagemTexto chamada');
+    console.log('imagemSelecionadaTexto:', !!imagemSelecionadaTexto);
+    
+    if (!imagemSelecionadaTexto) {
+        alert("Selecione ou arraste uma imagem antes de processar!");
+        return;
+    }
+    
+    const spanTexto = document.getElementById("textoExtraido");
+    if (spanTexto) {
+        spanTexto.textContent = "Processando...";
+    }
+    
+    mostrarProcessando('texto', true);
+    
+    Tesseract.recognize(
+        imagemSelecionadaTexto,
+        'por',
+        { logger: info => console.log(info) }
+    ).then(({ data: { text } }) => {
+        console.log('Texto extraído:', text);
+        if (spanTexto) {
+            spanTexto.textContent = text.trim() || "Nenhum texto detectado!";
+        }
+    }).catch(err => {
+        console.error('Erro no Tesseract:', err);
+        if (spanTexto) {
+            spanTexto.textContent = "Erro ao processar!";
+        }
+    }).finally(() => {
+        mostrarProcessando('texto', false);
+    });
+}
+
+function processarImagemCodigoMelhorada() {
+    console.log('processarImagemCodigo chamada');
+    console.log('imagemSelecionadaCodigo:', !!imagemSelecionadaCodigo);
+    
+    if (!imagemSelecionadaCodigo) {
+        alert("Selecione ou arraste uma imagem antes de processar!");
+        return;
+    }
+    
+    const spanCodigo = document.getElementById("codigoExtraido");
+    if (spanCodigo) {
+        spanCodigo.textContent = "Processando...";
+    }
+    
+    mostrarProcessando('codigo', true);
+    
+    Tesseract.recognize(
+        imagemSelecionadaCodigo,
+        'eng',
+        { logger: info => console.log(info) }
+    ).then(({ data: { text } }) => {
+        console.log('Texto bruto extraído:', text);
+        const numerosExtraidos = text.replace(/[^0-9]/g, '');
+        console.log('Números extraídos:', numerosExtraidos);
+        
+        if (spanCodigo) {
+            if (numerosExtraidos) {
+                spanCodigo.textContent = numerosExtraidos;
+            } else {
+                spanCodigo.textContent = "Nenhum número detectado!";
+            }
+        }
+    }).catch(err => {
+        console.error('Erro no Tesseract:', err);
+        if (spanCodigo) {
+            spanCodigo.textContent = "Erro ao processar imagem!";
+        }
+    }).finally(() => {
+        mostrarProcessando('codigo', false);
+    });
+}
+
+// Log para debug - remover em produção
+console.log('Script carregado completamente!');
