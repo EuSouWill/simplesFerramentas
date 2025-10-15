@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/front-end/css/upgrade.css">
     <link rel="stylesheet" href="/front-end/css/menu.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- Botão toggle para mobile -->
@@ -18,57 +18,131 @@
     <!-- Overlay para mobile -->
     <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
     
-    <!-- Container do menu será inserido automaticamente aqui -->
-    
     <div class="main-content">
         <div class="container">
-            <h1>Calculadora de Upgrade de Plano Anual</h1>
+            <div class="header-with-icon">
+                <i class="fas fa-arrow-up icon-upgrade"></i>
+                <h1>Calculadora de Upgrade de Plano</h1>
+            </div>
+            
             <form id="upgradeForm">
                 <div class="form-group">
-                    <label for="currentPlanValue">Valor do Plano Atual (R$):</label>
-                    <input type="text" id="currentPlanValue" required>
+                    <label for="currentPlanValue">
+                        <i class="fas fa-dollar-sign"></i>
+                        Valor do Plano Atual (R$):
+                    </label>
+                    <input type="text" id="currentPlanValue" placeholder="Ex: 299,90" required>
+                    <small class="help-text">Digite apenas números e vírgula</small>
                 </div>
                 
                 <div class="form-group">
-                    <label for="startDate">Data de Contratação do Plano:</label>
+                    <label for="startDate">
+                        <i class="fas fa-calendar-plus"></i>
+                        Data de Contratação do Plano:
+                    </label>
                     <input type="date" id="startDate" required>
+                    <small class="help-text">Data em que o plano atual foi contratado</small>
                 </div>
+
                 <div class="form-group">
-                    <label for="newPlanValue">Valor do Novo Plano (R$):</label>
-                    <input type="text" id="newPlanValue" required>
+                    <label for="upgradeDate">
+                        <i class="fas fa-calendar-check"></i>
+                        Data do Upgrade:
+                    </label>
+                    <input type="date" id="upgradeDate" required>
+                    <small class="help-text">Data em que deseja fazer o upgrade</small>
                 </div>
-                <button type="button" onclick="calculateUpgrade()">Calcular Upgrade</button>
+                
+                <div class="form-group">
+                    <label for="newPlanValue">
+                        <i class="fas fa-dollar-sign"></i>
+                        Valor do Novo Plano (R$):
+                    </label>
+                    <input type="text" id="newPlanValue" placeholder="Ex: 499,90" required>
+                    <small class="help-text">Digite apenas números e vírgula</small>
+                </div>
+
+                <button type="button" onclick="calculateUpgrade()" class="btn-primary">
+                    <i class="fas fa-calculator"></i>
+                    Calcular Upgrade
+                </button>
+
+                <button type="button" onclick="clearForm()" class="btn-secondary">
+                    <i class="fas fa-eraser"></i>
+                    Limpar
+                </button>
             </form>
+            
             <div id="upgradeResult" class="result">
-                <!-- Resultados da calculadora de upgrade serão atualizados aqui -->
+                <!-- Resultados serão inseridos aqui -->
             </div>
         </div>
         
         <div class="container">
-            <h1>Calculadora de duração de plano anual</h1>
-            <label for="start-date">Data de Início do Plano:</label>
-            <input type="date" id="start-date">
+            <div class="header-with-icon">
+                <i class="fas fa-clock icon-duration"></i>
+                <h1>Calculadora de Duração de Plano</h1>
+            </div>
+            
+            <div class="form-group">
+                <label for="start-date">
+                    <i class="fas fa-play"></i>
+                    Data de Início do Plano:
+                </label>
+                <input type="date" id="start-date" onchange="calculateEndDate()">
+                <small class="help-text">Selecione a data de início do plano anual</small>
+            </div>
         
             <div class="result" id="end-date-result"></div>
         </div>
         
         <div class="calculator">
-            <h1>Calculadora de Compras no Cartão de Crédito</h1>
-            <label for="purchaseDate">Data da Compra:</label>
-            <input type="date" id="purchaseDate" required>
-    
-            <label for="installments">Quantidade de Parcelas:</label>
-            <input type="number" id="installments" min="1" required>
-    
-            <label for="closingDate">Data de Fechamento da Fatura (dia):</label>
-            <input type="number" id="closingDate" min="1" max="31" required>
-    
-            <button onclick="calculateDueDates()">Calcular</button>
-    
+            <div class="header-with-icon">
+                <i class="fas fa-credit-card icon-credit"></i>
+                <h1>Calculadora de Cartão de Crédito</h1>
+            </div>
+            
+            <div class="form-group">
+                <label for="purchaseDate">
+                    <i class="fas fa-shopping-cart"></i>
+                    Data da Compra:
+                </label>
+                <input type="date" id="purchaseDate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="installments">
+                    <i class="fas fa-list-ol"></i>
+                    Quantidade de Parcelas:
+                </label>
+                <input type="number" id="installments" min="1" max="36" placeholder="Ex: 12" required>
+                <small class="help-text">Máximo 36 parcelas</small>
+            </div>
+
+            <div class="form-group">
+                <label for="closingDate">
+                    <i class="fas fa-calendar-times"></i>
+                    Data de Fechamento da Fatura (dia):
+                </label>
+                <input type="number" id="closingDate" min="1" max="31" placeholder="Ex: 15" required>
+                <small class="help-text">Dia do mês em que a fatura fecha</small>
+            </div>
+
+            <button onclick="calculateDueDates()" class="btn-primary">
+                <i class="fas fa-calculator"></i>
+                Calcular
+            </button>
+
             <div id="creditCardResult" class="result">
-                <!-- Resultados da calculadora de cartão de crédito serão atualizados aqui -->
+                <!-- Resultados serão inseridos aqui -->
             </div>
         </div>
+    </div>
+    
+    <!-- Loading overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="spinner"></div>
+        <p>Calculando...</p>
     </div>
     
     <!-- Scripts -->
