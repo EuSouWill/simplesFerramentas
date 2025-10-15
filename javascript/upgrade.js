@@ -169,6 +169,7 @@ const FormValidator = {
 };
 
 // Função para calcular meses utilizados - ADICIONAR ESTA FUNÇÃO
+// Função CORRIGIDA para calcular meses utilizados
 function calculateMonthsUsed(startDate, upgradeDate) {
     const start = new Date(startDate);
     const upgrade = new Date(upgradeDate);
@@ -178,18 +179,21 @@ function calculateMonthsUsed(startDate, upgradeDate) {
         return 0;
     }
     
-    let months = 0;
-    const current = new Date(start);
+    // Calcular diferença em anos e meses
+    let years = upgrade.getFullYear() - start.getFullYear();
+    let months = upgrade.getMonth() - start.getMonth();
     
-    // Contar meses completos
-    while (current < upgrade) {
-        current.setMonth(current.getMonth() + 1);
-        if (current <= upgrade) {
-            months++;
-        }
+    // Calcular total de meses
+    let totalMonths = years * 12 + months;
+    
+    // Se o dia do upgrade for maior ou igual ao dia de início, 
+    // conta o mês atual como utilizado
+    if (upgrade.getDate() >= start.getDate()) {
+        totalMonths += 1;
     }
     
-    return months;
+    // Garantir que não exceda 12 meses
+    return Math.min(totalMonths, 12);
 }
 
 // Calculadora de Upgrade - Sistema com Abatimento do Saldo (FUNÇÃO CORRIGIDA)
