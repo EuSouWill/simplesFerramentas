@@ -8,9 +8,28 @@ const Utils = {
         }).format(value);
     },
 
-    // Formatação de data
+    // Formatação de data CORRIGIDA
     formatDate(date) {
-        return new Intl.DateTimeFormat('pt-BR').format(new Date(date));
+        let dateObj;
+        
+        if (typeof date === 'string') {
+            // Se for string no formato YYYY-MM-DD (do input date)
+            if (date.includes('-')) {
+                const [year, month, day] = date.split('-');
+                dateObj = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+            } else {
+                dateObj = new Date(date);
+            }
+        } else {
+            dateObj = new Date(date);
+        }
+        
+        // Formatação manual para evitar problemas de fuso horário
+        const day = dateObj.getDate().toString().padStart(2, '0');
+        const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+        const year = dateObj.getFullYear();
+        
+        return `${day}/${month}/${year}`;
     },
 
     // Parse de valor monetário
@@ -21,19 +40,49 @@ const Utils = {
         return parseFloat(value) || 0;
     },
 
-    // Diferença em dias entre datas
+    // Diferença em dias entre datas CORRIGIDA
     daysDifference(date1, date2) {
+        let d1, d2;
+        
+        // Converter strings de data corretamente
+        if (typeof date1 === 'string' && date1.includes('-')) {
+            const [year, month, day] = date1.split('-');
+            d1 = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        } else {
+            d1 = new Date(date1);
+        }
+        
+        if (typeof date2 === 'string' && date2.includes('-')) {
+            const [year, month, day] = date2.split('-');
+            d2 = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        } else {
+            d2 = new Date(date2);
+        }
+        
         const oneDay = 24 * 60 * 60 * 1000;
-        return Math.round((new Date(date2) - new Date(date1)) / oneDay);
+        return Math.round((d2 - d1) / oneDay);
     },
 
     // Validação de data
     isValidDate(dateString) {
+        if (typeof dateString === 'string' && dateString.includes('-')) {
+            const [year, month, day] = dateString.split('-');
+            const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+            return date instanceof Date && !isNaN(date);
+        }
         const date = new Date(dateString);
         return date instanceof Date && !isNaN(date);
+    },
+
+    // Função para criar data a partir de string sem problemas de fuso horário
+    createDateFromString(dateString) {
+        if (typeof dateString === 'string' && dateString.includes('-')) {
+            const [year, month, day] = dateString.split('-');
+            return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        }
+        return new Date(dateString);
     }
 };
-
 // Sistema de notificações
 const Toast = {
     show(message, type = 'success', duration = 3000) {
@@ -168,32 +217,35 @@ const FormValidator = {
     }
 };
 
-// Função para calcular meses utilizados - ADICIONAR ESTA FUNÇÃO
-// Função CORRIGIDA para calcular meses utilizados
+
+// Função  calcular meses utilizados
 function calculateMonthsUsed(startDate, upgradeDate) {
-    const start = new Date(startDate);
-    const upgrade = new Date(upgradeDate);
+    // Usar a função utilitária para criar datas corretamente
+    const start = Utils.createDateFromString(startDate);
+    const upgrade = Utils.createDateFromString(upgradeDate);
     
     // Se a data de upgrade for anterior ou igual à data de início, retorna 0
     if (upgrade <= start) {
         return 0;
     }
     
-    // Calcular diferença em anos e meses
-    let years = upgrade.getFullYear() - start.getFullYear();
-    let months = upgrade.getMonth() - start.getMonth();
+    let months = 0;
+    const current = new Date(start.getFullYear(), start.getMonth(), start.getDate());
     
-    // Calcular total de meses
-    let totalMonths = years * 12 + months;
-    
-    // Se o dia do upgrade for maior ou igual ao dia de início, 
-    // conta o mês atual como utilizado
-    if (upgrade.getDate() >= start.getDate()) {
-        totalMonths += 1;
+    // Contar mês por mês
+    while (current <= upgrade) {
+        months++;
+        
+        // Avançar para o próximo mês
+        current.setMonth(current.getMonth() + 1);
+        
+        // Se passou de 12 meses, parar
+        if (months >= 12) {
+            break;
+        }
     }
     
-    // Garantir que não exceda 12 meses
-    return Math.min(totalMonths, 12);
+    return Math.min(months, 12);
 }
 
 // Calculadora de Upgrade - Sistema com Abatimento do Saldo (FUNÇÃO CORRIGIDA)
@@ -216,11 +268,12 @@ function calculateUpgrade() {
             const upgradeDate = document.getElementById('upgradeDate').value;
             const newPlanValue = Utils.parseCurrency(document.getElementById('newPlanValue').value);
 
-            const startDateObj = new Date(startDate);
-            const upgradeDateObj = new Date(upgradeDate);
+            // USAR AS FUNÇÕES UTILITÁRIAS CORRIGIDAS
+            const startDateObj = Utils.createDateFromString(startDate);
+            const upgradeDateObj = Utils.createDateFromString(upgradeDate);
 
             // Calcular meses utilizados (sistema mensal)
-            const monthsUsed = calculateMonthsUsed(startDateObj, upgradeDateObj);
+            const monthsUsed = calculateMonthsUsed(startDate, upgradeDate);
             const monthsRemaining = Math.max(0, 12 - monthsUsed);
 
             // Valores mensais
@@ -229,9 +282,9 @@ function calculateUpgrade() {
 
             // Valores calculados
             const valueUsed = currentPlanMonthlyValue * monthsUsed;
-            const valueRemaining = currentPlanMonthlyValue * monthsRemaining; // Saldo disponível
+            const valueRemaining = currentPlanMonthlyValue * monthsRemaining;
 
-            // Datas
+            // Datas - USAR createDateFromString
             const originalExpirationDate = new Date(startDateObj);
             originalExpirationDate.setFullYear(originalExpirationDate.getFullYear() + 1);
 
@@ -274,7 +327,7 @@ function calculateUpgrade() {
     }, 800);
 }
 
-// Função para gerar template de mensagem CORRIGIDO
+// Função para gerar template 
 function generateClientMessageWithDiscount(data) {
     let paymentSection = '';
     
@@ -330,8 +383,7 @@ Seu saldo atual cobre exatamente o valor do novo plano. Não há valor adicional
 Caso deseje prosseguir com o upgrade, estou à disposição para realizar o processo!
 
 Atenciosamente,
-[Seu Nome]
-Suporte Técnico`.trim();
+[Seu Nome]`.trim();
 
     return message;
 }
@@ -924,11 +976,44 @@ function calculateEndDate() {
 }
 
 // Calculadora de cartão de crédito
+// Função para alternar modo de cálculo
+function toggleCalculationMode() {
+    const mode = document.getElementById('calculationMode')?.value || 'single';
+    const singleSection = document.getElementById('singlePurchaseSection');
+    const multipleSection = document.getElementById('multiplePurchasesSection');
+    
+    if (singleSection && multipleSection) {
+        if (mode === 'single') {
+            singleSection.style.display = 'block';
+            multipleSection.style.display = 'none';
+        } else {
+            singleSection.style.display = 'none';
+            multipleSection.style.display = 'block';
+        }
+    }
+    
+    // Limpar resultados
+    const resultDiv = document.getElementById('creditCardResult');
+    if (resultDiv) resultDiv.innerHTML = '';
+}
+
+// Função principal modificada (substitui a calculateDueDates original)
 function calculateDueDates() {
+    const mode = document.getElementById('calculationMode')?.value || 'single';
+    
+    if (mode === 'single') {
+        calculateSinglePurchase();
+    } else {
+        calculateMultiplePurchases();
+    }
+}
+
+// Função para compra única (baseada no código original)
+function calculateSinglePurchase() {
     const purchaseDate = document.getElementById('purchaseDate').value;
+    const purchaseValue = Utils.parseCurrency(document.getElementById('purchaseValue')?.value || '0');
     const installments = parseInt(document.getElementById('installments').value);
     const closingDate = parseInt(document.getElementById('closingDate').value);
-    const resultDiv = document.getElementById('creditCardResult');
 
     // Validações
     if (!purchaseDate || !installments || !closingDate) {
@@ -950,41 +1035,53 @@ function calculateDueDates() {
 
     setTimeout(() => {
         try {
-            const purchase = new Date(purchaseDate);
+            const purchase = Utils.createDateFromString ? Utils.createDateFromString(purchaseDate) : new Date(purchaseDate);
+            const installmentValue = purchaseValue > 0 ? purchaseValue / installments : 0;
             const installmentsList = [];
 
             for (let i = 0; i < installments; i++) {
-                // Calcular o mês da parcela
                 const installmentMonth = new Date(purchase);
                 installmentMonth.setMonth(installmentMonth.getMonth() + i);
                 
-                // Determinar se a compra entrou na fatura atual ou próxima
                 let billingCycle = new Date(installmentMonth.getFullYear(), installmentMonth.getMonth(), closingDate);
                 
-                // Se a compra foi feita depois do fechamento, vai para o próximo ciclo
                 if (i === 0 && purchase.getDate() > closingDate) {
                     billingCycle.setMonth(billingCycle.getMonth() + 1);
                 }
                 
-                // Data de vencimento (geralmente 10 dias após o fechamento)
                 const dueDate = new Date(billingCycle);
                 dueDate.setDate(dueDate.getDate() + 10);
                 
-                // Ajustar se a data de vencimento cair em fim de semana
-                if (dueDate.getDay() === 0) { // Domingo
+                if (dueDate.getDay() === 0) {
                     dueDate.setDate(dueDate.getDate() + 1);
-                } else if (dueDate.getDay() === 6) { // Sábado
+                } else if (dueDate.getDay() === 6) {
                     dueDate.setDate(dueDate.getDate() + 2);
                 }
 
                 installmentsList.push({
                     number: i + 1,
                     closingDate: billingCycle,
-                    dueDate: dueDate
+                    dueDate: dueDate,
+                    value: installmentValue,
+                    description: 'Compra Única'
                 });
             }
 
-            displayCreditCardResult(installmentsList, purchase);
+            const clientMessage = generateSinglePurchaseMessage({
+                purchaseDate,
+                purchaseValue,
+                installments,
+                installmentValue,
+                installmentsList,
+                closingDate
+            });
+
+            displayCreditCardResultEnhanced(installmentsList, purchase, clientMessage, {
+                purchaseValue,
+                installmentValue,
+                mode: 'single'
+            });
+            
             Loading.hide();
             Toast.show('Datas calculadas com sucesso!', 'success');
 
@@ -995,8 +1092,137 @@ function calculateDueDates() {
         }
     }, 500);
 }
+// Função para múltiplas compras
+function calculateMultiplePurchases() {
+    const closingDate = parseInt(document.getElementById('closingDateMultiple').value);
+    
+    const purchase1Date = document.getElementById('purchase1Date').value;
+    const purchase1Value = Utils.parseCurrency(document.getElementById('purchase1Value')?.value || '0');
+    const purchase1Installments = parseInt(document.getElementById('purchase1Installments').value);
+    const purchase1Description = document.getElementById('purchase1Description').value || 'Primeira Compra';
+    
+    const purchase2Date = document.getElementById('purchase2Date').value;
+    const purchase2Value = Utils.parseCurrency(document.getElementById('purchase2Value')?.value || '0');
+    const purchase2Installments = parseInt(document.getElementById('purchase2Installments').value);
+    const purchase2Description = document.getElementById('purchase2Description').value || 'Segunda Compra';
 
-function displayCreditCardResult(installments, purchaseDate) {
+    // Validações
+    if (!purchase1Date || !purchase1Installments || !purchase2Date || !purchase2Installments || !closingDate) {
+        Toast.show('Preencha todos os campos obrigatórios', 'error');
+        return;
+    }
+
+    if (purchase1Installments < 1 || purchase1Installments > 36 || 
+        purchase2Installments < 1 || purchase2Installments > 36) {
+        Toast.show('Número de parcelas deve ser entre 1 e 36', 'error');
+        return;
+    }
+
+    if (closingDate < 1 || closingDate > 31) {
+        Toast.show('Dia de fechamento deve ser entre 1 e 31', 'error');
+        return;
+    }
+
+    Loading.show();
+
+    setTimeout(() => {
+        try {
+            const date1 = Utils.createDateFromString ? Utils.createDateFromString(purchase1Date) : new Date(purchase1Date);
+            const date2 = Utils.createDateFromString ? Utils.createDateFromString(purchase2Date) : new Date(purchase2Date);
+            
+            const installment1Value = purchase1Value > 0 ? purchase1Value / purchase1Installments : 0;
+            const installment2Value = purchase2Value > 0 ? purchase2Value / purchase2Installments : 0;
+
+            // Calcular parcelas para ambas as compras
+            const installments1 = calculateInstallmentsForPurchase(date1, purchase1Installments, closingDate, installment1Value, purchase1Description);
+            const installments2 = calculateInstallmentsForPurchase(date2, purchase2Installments, closingDate, installment2Value, purchase2Description);
+
+            const data = {
+                purchase1: {
+                    date: purchase1Date,
+                    value: purchase1Value,
+                    installments: purchase1Installments,
+                    installmentValue: installment1Value,
+                    description: purchase1Description,
+                    installmentsList: installments1
+                },
+                purchase2: {
+                    date: purchase2Date,
+                    value: purchase2Value,
+                    installments: purchase2Installments,
+                    installmentValue: installment2Value,
+                    description: purchase2Description,
+                    installmentsList: installments2
+                },
+                closingDate
+            };
+
+            const clientMessage = generateMultiplePurchasesMessage(data);
+            displayMultiplePurchasesResult(data, clientMessage);
+            
+            Loading.hide();
+            Toast.show('Cálculo de múltiplas compras realizado com sucesso!', 'success');
+
+        } catch (error) {
+            Loading.hide();
+            Toast.show('Erro ao calcular parcelas. Verifique os dados informados.', 'error');
+            console.error('Erro no cálculo:', error);
+        }
+    }, 500);
+}
+
+// Função utilitária para calcular parcelas de uma compra
+// Função CORRIGIDA para calcular parcelas de uma compra
+function calculateInstallmentsForPurchase(purchaseDate, installmentCount, closingDay, installmentValue, description) {
+    const installments = [];
+    
+    for (let i = 0; i < installmentCount; i++) {
+        // Data da parcela atual (mês + i da data de compra)
+        const installmentMonth = new Date(purchaseDate.getFullYear(), purchaseDate.getMonth() + i, purchaseDate.getDate());
+        
+        // Determinar em qual fatura essa parcela será incluída
+        let billingCycle = new Date(installmentMonth.getFullYear(), installmentMonth.getMonth(), closingDay);
+        
+        // Se for a primeira parcela e a compra foi feita após o fechamento, vai para o próximo ciclo
+        if (i === 0 && purchaseDate.getDate() > closingDay) {
+            billingCycle.setMonth(billingCycle.getMonth() + 1);
+        }
+        // Para parcelas subsequentes, verificar se o dia da compra original passou do fechamento
+        else if (i > 0) {
+            // Se a data de vencimento "natural" da parcela for após o fechamento do mês, 
+            // ela vai para o próximo fechamento
+            const naturalDueDay = installmentMonth.getDate();
+            if (naturalDueDay > closingDay) {
+                billingCycle.setMonth(billingCycle.getMonth() + 1);
+            }
+        }
+        
+        // Data de vencimento da fatura (10 dias após fechamento)
+        const dueDate = new Date(billingCycle);
+        dueDate.setDate(dueDate.getDate() + 10);
+        
+        // Ajustar se cair em fim de semana
+        if (dueDate.getDay() === 0) { // Domingo
+            dueDate.setDate(dueDate.getDate() + 1);
+        } else if (dueDate.getDay() === 6) { // Sábado
+            dueDate.setDate(dueDate.getDate() + 2);
+        }
+
+        installments.push({
+            number: i + 1,
+            total: installmentCount,
+            value: installmentValue,
+            closingDate: billingCycle,
+            dueDate: dueDate,
+            description: description,
+            originalPurchaseDate: new Date(purchaseDate) // Para referência
+        });
+    }
+
+    return installments;
+}
+// Função modificada para exibir resultado de compra única (compatível com o código original)
+function displayCreditCardResultEnhanced(installments, purchaseDate, clientMessage = null, additionalData = null) {
     const resultDiv = document.getElementById('creditCardResult');
     
     if (!resultDiv) return;
@@ -1006,7 +1232,7 @@ function displayCreditCardResult(installments, purchaseDate) {
     
     let installmentsHTML = '';
     
-    installments.forEach((installment, index) => {
+    installments.forEach((installment) => {
         const isPast = installment.dueDate < today;
         const isCurrent = installment === nextDue;
         const statusClass = isPast ? 'past' : isCurrent ? 'current' : 'future';
@@ -1017,6 +1243,7 @@ function displayCreditCardResult(installments, purchaseDate) {
                 <div class="installment-header">
                     <i class="fas fa-${statusIcon}"></i>
                     <strong>Parcela ${installment.number}/${installments.length}</strong>
+                    ${additionalData?.installmentValue ? `<span>${Utils.formatCurrency(installment.value || additionalData.installmentValue)}</span>` : ''}
                 </div>
                 <div class="installment-details">
                     <span>Fechamento: ${Utils.formatDate(installment.closingDate)}</span>
@@ -1029,14 +1256,49 @@ function displayCreditCardResult(installments, purchaseDate) {
     const resultHTML = `
         <div class="result-highlight">
             <i class="fas fa-credit-card"></i>
-            Parcelamento em <strong>${installments.length}x</strong>
+            ${additionalData?.purchaseValue ? 
+                `Compra: ${Utils.formatCurrency(additionalData.purchaseValue)} em <strong>${installments.length}x</strong> de ${Utils.formatCurrency(additionalData.installmentValue)}` :
+                `Parcelamento em <strong>${installments.length}x</strong>`
+            }
         </div>
+
+        ${clientMessage ? `
+            <!-- Template para o analista -->
+            <div class="client-message-template">
+                <div class="template-header">
+                    <i class="fas fa-envelope"></i>
+                    <h3>Template de Mensagem para o Cliente</h3>
+                </div>
+                
+                <div class="message-actions">
+                    <button type="button" onclick="copyCreditCardMessage()" class="btn-copy">
+                        <i class="fas fa-copy"></i>
+                        Copiar Mensagem
+                    </button>
+                    <button type="button" onclick="toggleCreditCardPreview()" class="btn-preview">
+                        <i class="fas fa-eye"></i>
+                        Ver/Ocultar Prévia
+                    </button>
+                </div>
+                
+                <div class="message-preview" id="creditCardMessagePreview" style="display: none;">
+                    <pre id="creditCardMessageText">${clientMessage}</pre>
+                </div>
+                
+                <small class="template-note">
+                    <i class="fas fa-info-circle"></i>
+                    Mensagem gerada automaticamente para o cliente.
+                </small>
+            </div>
+        ` : ''}
         
         <div class="purchase-info">
             <h4><i class="fas fa-shopping-cart"></i> Informações da Compra</h4>
             <ul>
                 <li><span>Data da Compra:</span> ${Utils.formatDate(purchaseDate)}</li>
+                ${additionalData?.purchaseValue ? `<li><span>Valor Total:</span> ${Utils.formatCurrency(additionalData.purchaseValue)}</li>` : ''}
                 <li><span>Quantidade de Parcelas:</span> ${installments.length}x</li>
+                ${additionalData?.installmentValue ? `<li><span>Valor por Parcela:</span> ${Utils.formatCurrency(additionalData.installmentValue)}</li>` : ''}
                 <li><span>Primeira Parcela:</span> ${Utils.formatDate(installments[0].dueDate)}</li>
                 <li><span>Última Parcela:</span> ${Utils.formatDate(installments[installments.length - 1].dueDate)}</li>
             </ul>
@@ -1047,6 +1309,7 @@ function displayCreditCardResult(installments, purchaseDate) {
                 <h4><i class="fas fa-bell"></i> Próximo Vencimento</h4>
                 <div class="highlight-due">
                     <strong>Parcela ${nextDue.number}:</strong> ${Utils.formatDate(nextDue.dueDate)}
+                    ${nextDue.value ? ` - ${Utils.formatCurrency(nextDue.value)}` : ''}
                     <small>(${Utils.daysDifference(today, nextDue.dueDate)} dias)</small>
                 </div>
             </div>
@@ -1061,6 +1324,433 @@ function displayCreditCardResult(installments, purchaseDate) {
     `;
     
     resultDiv.innerHTML = resultHTML;
+}
+
+// Função para exibir resultado de múltiplas compras
+function displayMultiplePurchasesResult(data, clientMessage) {
+    const resultDiv = document.getElementById('creditCardResult');
+    
+    if (!resultDiv) return;
+
+    const today = new Date();
+    const allInstallments = [...data.purchase1.installmentsList, ...data.purchase2.installmentsList];
+    
+    // Ordenar por data de vencimento
+    allInstallments.sort((a, b) => a.dueDate - b.dueDate);
+    
+    // Criar resumo mensal
+    const monthlyResume = createMonthlyResume(allInstallments);
+    
+    // Determinar quando cada compra termina
+    const purchase1EndDate = data.purchase1.installmentsList[data.purchase1.installmentsList.length - 1].dueDate;
+    const purchase2EndDate = data.purchase2.installmentsList[data.purchase2.installmentsList.length - 1].dueDate;
+
+    const resultHTML = `
+        <div class="purchases-summary">
+            <h4><i class="fas fa-shopping-cart"></i> Resumo das Compras</h4>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <span>Total Geral:</span>
+                    <span><strong>${Utils.formatCurrency(data.purchase1.value + data.purchase2.value)}</strong></span>
+                </div>
+                <div class="summary-item">
+                    <span>Primeira Parcela:</span>
+                    <span>${Utils.formatDate(allInstallments[0].dueDate)}</span>
+                </div>
+                <div class="summary-item">
+                    <span>Última Parcela:</span>
+                    <span>${Utils.formatDate(allInstallments[allInstallments.length - 1].dueDate)}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Template para o analista -->
+        <div class="client-message-template">
+            <div class="template-header">
+                <i class="fas fa-envelope"></i>
+                <h3>Template de Mensagem para o Cliente</h3>
+            </div>
+            
+            <div class="message-actions">
+                <button type="button" onclick="copyCreditCardMessage()" class="btn-copy">
+                    <i class="fas fa-copy"></i>
+                    Copiar Mensagem
+                </button>
+                <button type="button" onclick="toggleCreditCardPreview()" class="btn-preview">
+                    <i class="fas fa-eye"></i>
+                    Ver/Ocultar Prévia
+                </button>
+            </div>
+            
+            <div class="message-preview" id="creditCardMessagePreview" style="display: none;">
+                <pre id="creditCardMessageText">${clientMessage}</pre>
+            </div>
+            
+            <small class="template-note">
+                <i class="fas fa-info-circle"></i>
+                Mensagem gerada automaticamente para múltiplas compras.
+            </small>
+        </div>
+
+        <div class="purchase-timeline">
+            <h4><i class="fas fa-timeline"></i> Timeline das Compras</h4>
+            
+            <div class="timeline-purchase purchase1">
+                <div class="purchase-header">
+                    <span class="purchase-title">${data.purchase1.description}</span>
+                    <span class="purchase-status ${purchase1EndDate > today ? 'active' : 'finished'}">
+                        ${purchase1EndDate > today ? 'Ativo' : 'Finalizado'}
+                    </span>
+                </div>
+                <div class="purchase-details">
+                    <p><strong>Valor:</strong> ${Utils.formatCurrency(data.purchase1.value)} em ${data.purchase1.installments}x de ${Utils.formatCurrency(data.purchase1.installmentValue)}</p>
+                    <p><strong>Período:</strong> ${Utils.formatDate(data.purchase1.date)} - Termina em ${Utils.formatDate(purchase1EndDate)}</p>
+                </div>
+            </div>
+
+            <div class="timeline-purchase purchase2">
+                <div class="purchase-header">
+                    <span class="purchase-title">${data.purchase2.description}</span>
+                    <span class="purchase-status ${purchase2EndDate > today ? 'active' : 'finished'}">
+                        ${purchase2EndDate > today ? 'Ativo' : 'Finalizado'}
+                    </span>
+                </div>
+                <div class="purchase-details">
+                    <p><strong>Valor:</strong> ${Utils.formatCurrency(data.purchase2.value)} em ${data.purchase2.installments}x de ${Utils.formatCurrency(data.purchase2.installmentValue)}</p>
+                    <p><strong>Período:</strong> ${Utils.formatDate(data.purchase2.date)} - Termina em ${Utils.formatDate(purchase2EndDate)}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="monthly-summary">
+            <h4><i class="fas fa-calendar-alt"></i> Resumo Mensal</h4>
+            ${monthlyResume}
+        </div>
+    `;
+    
+    resultDiv.innerHTML = resultHTML;
+}
+
+// Função para criar resumo mensal
+function createMonthlyResume(allInstallments) {
+    const monthlyTotals = {};
+    
+    allInstallments.forEach(installment => {
+        // Usar a data de vencimento real de cada parcela
+        const dueDate = installment.dueDate;
+        const monthKey = dueDate.getFullYear() + '-' + (dueDate.getMonth() + 1).toString().padStart(2, '0');
+        
+        if (!monthlyTotals[monthKey]) {
+            monthlyTotals[monthKey] = {
+                total: 0,
+                installments: [],
+                details: []
+            };
+        }
+        
+        monthlyTotals[monthKey].total += installment.value;
+        monthlyTotals[monthKey].installments.push(installment);
+        monthlyTotals[monthKey].details.push({
+            description: installment.description,
+            value: installment.value,
+            parcela: `${installment.number}/${installment.total}`
+        });
+    });
+    
+    let resumeHTML = '';
+    Object.keys(monthlyTotals).sort().forEach(monthKey => {
+        const [year, month] = monthKey.split('-');
+        const monthName = new Date(year, month - 1, 1).toLocaleDateString('pt-BR', { 
+            month: 'long', 
+            year: 'numeric' 
+        });
+        
+        const monthData = monthlyTotals[monthKey];
+        const installmentCount = monthData.installments.length;
+        
+        resumeHTML += `
+            <div class="month-item">
+                <div class="month-header">
+                    <span><strong>${monthName.charAt(0).toUpperCase() + monthName.slice(1)}:</strong></span>
+                    <span><strong>${Utils.formatCurrency(monthData.total)}</strong> (${installmentCount} parcela${installmentCount > 1 ? 's' : ''})</span>
+                </div>
+                <div class="month-details">
+                    ${monthData.details.map(detail => 
+                        `<small>• ${detail.description} - Parcela ${detail.parcela}: ${Utils.formatCurrency(detail.value)}</small>`
+                    ).join('<br>')}
+                </div>
+            </div>
+        `;
+    });
+    
+    return resumeHTML;
+}
+
+// Manter compatibilidade com função original
+function displayCreditCardResult(installments, purchaseDate, clientMessage = null, additionalData = null) {
+    displayCreditCardResultEnhanced(installments, purchaseDate, clientMessage, additionalData);
+}
+// Função para gerar mensagem de compra única
+function generateSinglePurchaseMessage(data) {
+    const message = `
+Olá!
+
+Segue o cronograma das parcelas da sua compra no cartão de crédito:
+
+📋 **INFORMAÇÕES DA COMPRA:**
+• Data da compra: ${Utils.formatDate(data.purchaseDate)}
+• Valor total: ${Utils.formatCurrency(data.purchaseValue)}
+• Parcelamento: ${data.installments}x de ${Utils.formatCurrency(data.installmentValue)}
+• Data de fechamento da fatura: dia ${data.closingDate}
+
+📅 **CRONOGRAMA DE VENCIMENTOS:**
+• Primeira parcela: ${Utils.formatDate(data.installmentsList[0].dueDate)}
+• Última parcela: ${Utils.formatDate(data.installmentsList[data.installmentsList.length - 1].dueDate)}
+
+📝 **DETALHAMENTO DAS PARCELAS:**
+${data.installmentsList.map(inst => 
+    `Parcela ${inst.number}/${data.installments}: Vencimento em ${Utils.formatDate(inst.dueDate)} - ${Utils.formatCurrency(inst.value)}`
+).join('\n')}
+
+💳 **IMPORTANTE:**
+As parcelas aparecerão na sua fatura conforme as datas de fechamento. Lembre-se de que o vencimento da fatura é sempre 10 dias após o fechamento.
+
+Caso tenha dúvidas sobre as datas de cobrança, estou à disposição!
+
+Atenciosamente,
+[Seu Nome]
+Suporte Técnico`.trim();
+
+    return message;
+}
+
+// Função para gerar mensagem de múltiplas compras
+function generateMultiplePurchasesMessage(data) {
+    const purchase1EndDate = data.purchase1.installmentsList[data.purchase1.installmentsList.length - 1].dueDate;
+    const purchase2EndDate = data.purchase2.installmentsList[data.purchase2.installmentsList.length - 1].dueDate;
+    const allInstallments = [...data.purchase1.installmentsList, ...data.purchase2.installmentsList];
+    allInstallments.sort((a, b) => a.dueDate - b.dueDate);
+
+    // Calcular totais mensais CORRIGIDO
+    const monthlyTotals = {};
+    allInstallments.forEach(installment => {
+        const dueDate = installment.dueDate;
+        const monthKey = dueDate.getFullYear() + '-' + (dueDate.getMonth() + 1).toString().padStart(2, '0');
+        
+        if (!monthlyTotals[monthKey]) {
+            monthlyTotals[monthKey] = {
+                total: 0,
+                details: []
+            };
+        }
+        
+        monthlyTotals[monthKey].total += installment.value;
+        monthlyTotals[monthKey].details.push({
+            description: installment.description,
+            value: installment.value,
+            parcela: `${installment.number}/${installment.total}`
+        });
+    });
+
+    let monthlyBreakdown = '';
+    Object.keys(monthlyTotals).sort().forEach(monthKey => {
+        const [year, month] = monthKey.split('-');
+        const monthName = new Date(year, month - 1, 1).toLocaleDateString('pt-BR', { 
+            month: 'long', 
+            year: 'numeric' 
+        });
+        
+        const monthData = monthlyTotals[monthKey];
+        
+        monthlyBreakdown += `
+📅 **${monthName.charAt(0).toUpperCase() + monthName.slice(1)}:** ${Utils.formatCurrency(monthData.total)} (${monthData.details.length} parcela${monthData.details.length > 1 ? 's' : ''})
+${monthData.details.map(detail => `   • ${detail.description} - Parcela ${detail.parcela}: ${Utils.formatCurrency(detail.value)}`).join('\n')}
+`;
+    });
+
+    const message = `
+Olá!
+
+Analisei suas duas compras parceladas e segue o cronograma completo:
+
+🛍️ **RESUMO DAS COMPRAS:**
+
+**${data.purchase1.description}:**
+• Data: ${Utils.formatDate(data.purchase1.date)}
+• Valor: ${Utils.formatCurrency(data.purchase1.value)}
+• Parcelamento: ${data.purchase1.installments}x de ${Utils.formatCurrency(data.purchase1.installmentValue)}
+• Término: ${Utils.formatDate(purchase1EndDate)}
+
+**${data.purchase2.description}:**
+• Data: ${Utils.formatDate(data.purchase2.date)}
+• Valor: ${Utils.formatCurrency(data.purchase2.value)}
+• Parcelamento: ${data.purchase2.installments}x de ${Utils.formatCurrency(data.purchase2.installmentValue)}
+• Término: ${Utils.formatDate(purchase2EndDate)}
+
+💰 **VALOR TOTAL:** ${Utils.formatCurrency(data.purchase1.value + data.purchase2.value)}
+
+📊 **CRONOGRAMA MENSAL DETALHADO:**
+${monthlyBreakdown}
+
+📋 **INFORMAÇÕES IMPORTANTES:**
+• Data de fechamento da fatura: dia ${data.closingDate}
+• Vencimento da fatura: sempre 10 dias após o fechamento
+• As parcelas são cobradas mensalmente a partir da data de cada compra
+• ${data.purchase1.description} termina em: ${Utils.formatDate(purchase1EndDate)}
+• ${data.purchase2.description} termina em: ${Utils.formatDate(purchase2EndDate)}
+
+${purchase1EndDate.getTime() !== purchase2EndDate.getTime() ? `
+⏰ **ATENÇÃO:** As compras terminam em datas diferentes:
+• ${data.purchase1.description}: última parcela em ${Utils.formatDate(purchase1EndDate)}
+• ${data.purchase2.description}: última parcela em ${Utils.formatDate(purchase2EndDate)}
+
+Após ${Utils.formatDate(purchase1EndDate < purchase2EndDate ? purchase1EndDate : purchase2EndDate)}, você terá apenas as parcelas da ${purchase1EndDate > purchase2EndDate ? data.purchase1.description : data.purchase2.description} restantes.
+` : ''}
+
+Caso tenha dúvidas sobre o cronograma de pagamentos, estou à disposição!
+
+Atenciosamente,
+[Seu Nome]
+Suporte Técnico`.trim();
+
+    return message;
+}
+
+// Funções para gerenciar mensagens do cartão de crédito
+function copyCreditCardMessage() {
+    const messageText = document.getElementById('creditCardMessageText');
+    if (messageText) {
+        const text = messageText.textContent;
+        
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(() => {
+                Toast.show('Mensagem copiada para a área de transferência!', 'success');
+            }).catch((err) => {
+                console.error('Erro ao copiar:', err);
+                fallbackCopyTextToClipboard(text);
+            });
+        } else {
+            fallbackCopyTextToClipboard(text);
+        }
+    } else {
+        Toast.show('Erro: mensagem não encontrada', 'error');
+    }
+}
+
+function toggleCreditCardPreview() {
+    const preview = document.getElementById('creditCardMessagePreview');
+    const button = document.querySelector('.btn-preview');
+    
+    if (preview && button) {
+        if (preview.style.display === 'none') {
+            preview.style.display = 'block';
+            button.innerHTML = '<i class="fas fa-eye-slash"></i> Ocultar Prévia';
+        } else {
+            preview.style.display = 'none';
+            button.innerHTML = '<i class="fas fa-eye"></i> Ver Prévia';
+        }
+    }
+}
+
+// Função para limpar formulário de cartão de crédito
+function clearCreditCardForm() {
+    const mode = document.getElementById('calculationMode')?.value || 'single';
+    
+    if (mode === 'single') {
+        document.getElementById('purchaseDate').value = '';
+        if (document.getElementById('purchaseValue')) document.getElementById('purchaseValue').value = '';
+        document.getElementById('installments').value = '';
+        document.getElementById('closingDate').value = '';
+    } else {
+        document.getElementById('closingDateMultiple').value = '';
+        document.getElementById('purchase1Date').value = '';
+        document.getElementById('purchase1Value').value = '';
+        document.getElementById('purchase1Installments').value = '';
+        document.getElementById('purchase1Description').value = '';
+        document.getElementById('purchase2Date').value = '';
+        document.getElementById('purchase2Value').value = '';
+        document.getElementById('purchase2Installments').value = '';
+        document.getElementById('purchase2Description').value = '';
+    }
+    
+    const resultDiv = document.getElementById('creditCardResult');
+    if (resultDiv) {
+        resultDiv.innerHTML = '';
+    }
+    
+    Toast.show('Formulário de cartão de crédito limpo!', 'info');
+}
+
+// Formatação automática para campos monetários do cartão
+document.addEventListener('DOMContentLoaded', function() {
+    // Campos monetários da calculadora de cartão
+    const creditCardMoneyInputs = document.querySelectorAll('#purchaseValue, #purchase1Value, #purchase2Value');
+    
+    creditCardMoneyInputs.forEach(input => {
+        if (input) {
+            input.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 0) {
+                    value = (parseInt(value) / 100).toFixed(2);
+                    e.target.value = value.replace('.', ',');
+                }
+            });
+        }
+    });
+
+    // Auto-popular data atual nos campos de data se estiverem vazios
+    const today = new Date().toISOString().split('T')[0];
+    
+    const dateFields = ['purchaseDate', 'purchase1Date', 'purchase2Date'];
+    dateFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field && !field.value) {
+            field.value = today;
+        }
+    });
+});
+
+// Event listeners específicos para cartão de crédito
+document.addEventListener('keydown', function(e) {
+    // Enter para calcular quando estiver nos campos do cartão
+    if (e.key === 'Enter' && e.target.tagName === 'INPUT') {
+        const calculator = e.target.closest('.calculator');
+        if (calculator) {
+            e.preventDefault();
+            calculateDueDates();
+        }
+    }
+});
+
+// Função utilitária para validar datas no cartão
+function validateCreditCardDates(date1, date2) {
+    const d1 = new Date(date1);
+    const d2 = new Date(date2);
+    const today = new Date();
+    
+    // Verificar se as datas não são muito antigas (mais de 2 anos)
+    const twoYearsAgo = new Date();
+    twoYearsAgo.setFullYear(today.getFullYear() - 2);
+    
+    if (d1 < twoYearsAgo || d2 < twoYearsAgo) {
+        return {
+            valid: false,
+            message: 'Datas muito antigas. Verifique se as datas estão corretas.'
+        };
+    }
+    
+    // Verificar se as datas não são muito futuras (mais de 1 ano)
+    const oneYearFromNow = new Date();
+    oneYearFromNow.setFullYear(today.getFullYear() + 1);
+    
+    if (d1 > oneYearFromNow || d2 > oneYearFromNow) {
+        return {
+            valid: false,
+            message: 'Datas muito futuras. Verifique se as datas estão corretas.'
+        };
+    }
+    
+    return { valid: true };
 }
 
 // Função para limpar formulário

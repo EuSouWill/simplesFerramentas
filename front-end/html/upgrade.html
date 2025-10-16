@@ -97,46 +97,123 @@
         </div>
         
         <div class="calculator">
-            <div class="header-with-icon">
-                <i class="fas fa-credit-card icon-credit"></i>
-                <h1>Calculadora de Cartão de Crédito</h1>
-            </div>
-            
+    <div class="header-with-icon">
+        <i class="fas fa-credit-card icon-credit"></i>
+        <h1>Calculadora de Cartão de Crédito</h1>
+    </div>
+    
+    <!-- Novo seletor de modo -->
+    <div class="form-group">
+        <label for="calculationMode">
+            <i class="fas fa-cog"></i>
+            Modo de Cálculo:
+        </label>
+        <select id="calculationMode" onchange="toggleCalculationMode()">
+            <option value="single">Compra Única</option>
+            <option value="multiple">Múltiplas Compras</option>
+        </select>
+        <small class="help-text">Escolha entre calcular uma ou múltiplas compras</small>
+    </div>
+
+    <!-- Seção Compra Única (campos existentes) -->
+    <div id="singlePurchaseSection">
+        <div class="form-group">
+            <label for="purchaseDate">
+                <i class="fas fa-shopping-cart"></i>
+                Data da Compra:
+            </label>
+            <input type="date" id="purchaseDate" required>
+        </div>
+
+        <div class="form-group">
+            <label for="purchaseValue">
+                <i class="fas fa-dollar-sign"></i>
+                Valor da Compra (R$):
+            </label>
+            <input type="text" id="purchaseValue" placeholder="Ex: 2000,00">
+            <small class="help-text">Digite apenas números e vírgula</small>
+        </div>
+
+        <div class="form-group">
+            <label for="installments">
+                <i class="fas fa-list-ol"></i>
+                Quantidade de Parcelas:
+            </label>
+            <input type="number" id="installments" min="1" max="36" placeholder="Ex: 12" required>
+            <small class="help-text">Máximo 36 parcelas</small>
+        </div>
+
+        <div class="form-group">
+            <label for="closingDate">
+                <i class="fas fa-calendar-times"></i>
+                Data de Fechamento da Fatura (dia):
+            </label>
+            <input type="number" id="closingDate" min="1" max="31" placeholder="Ex: 15" required>
+            <small class="help-text">Dia do mês em que a fatura fecha</small>
+        </div>
+    </div>
+
+    <!-- Nova seção para múltiplas compras -->
+    <div id="multiplePurchasesSection" style="display: none;">
+        <div class="form-group">
+            <label for="closingDateMultiple">
+                <i class="fas fa-calendar-times"></i>
+                Data de Fechamento da Fatura (dia):
+            </label>
+            <input type="number" id="closingDateMultiple" min="1" max="31" placeholder="Ex: 15" required>
+            <small class="help-text">Dia do mês em que a fatura fecha</small>
+        </div>
+
+        <div class="purchase-block">
+            <h4><i class="fas fa-shopping-bag"></i> Primeira Compra</h4>
             <div class="form-group">
-                <label for="purchaseDate">
-                    <i class="fas fa-shopping-cart"></i>
-                    Data da Compra:
-                </label>
-                <input type="date" id="purchaseDate" required>
+                <label for="purchase1Date">Data da Compra:</label>
+                <input type="date" id="purchase1Date" required>
             </div>
-
             <div class="form-group">
-                <label for="installments">
-                    <i class="fas fa-list-ol"></i>
-                    Quantidade de Parcelas:
-                </label>
-                <input type="number" id="installments" min="1" max="36" placeholder="Ex: 12" required>
-                <small class="help-text">Máximo 36 parcelas</small>
+                <label for="purchase1Value">Valor (R$):</label>
+                <input type="text" id="purchase1Value" placeholder="Ex: 2000,00">
             </div>
-
             <div class="form-group">
-                <label for="closingDate">
-                    <i class="fas fa-calendar-times"></i>
-                    Data de Fechamento da Fatura (dia):
-                </label>
-                <input type="number" id="closingDate" min="1" max="31" placeholder="Ex: 15" required>
-                <small class="help-text">Dia do mês em que a fatura fecha</small>
+                <label for="purchase1Installments">Parcelas:</label>
+                <input type="number" id="purchase1Installments" min="1" max="36" placeholder="Ex: 12">
             </div>
-
-            <button onclick="calculateDueDates()" class="btn-primary">
-                <i class="fas fa-calculator"></i>
-                Calcular
-            </button>
-
-            <div id="creditCardResult" class="result">
-                <!-- Resultados serão inseridos aqui -->
+            <div class="form-group">
+                <label for="purchase1Description">Descrição:</label>
+                <input type="text" id="purchase1Description" placeholder="Ex: Plano Anual">
             </div>
         </div>
+
+        <div class="purchase-block">
+            <h4><i class="fas fa-shopping-bag"></i> Segunda Compra</h4>
+            <div class="form-group">
+                <label for="purchase2Date">Data da Compra:</label>
+                <input type="date" id="purchase2Date" required>
+            </div>
+            <div class="form-group">
+                <label for="purchase2Value">Valor (R$):</label>
+                <input type="text" id="purchase2Value" placeholder="Ex: 2500,00">
+            </div>
+            <div class="form-group">
+                <label for="purchase2Installments">Parcelas:</label>
+                <input type="number" id="purchase2Installments" min="1" max="36" placeholder="Ex: 12">
+            </div>
+            <div class="form-group">
+                <label for="purchase2Description">Descrição:</label>
+                <input type="text" id="purchase2Description" placeholder="Ex: Upgrade">
+            </div>
+        </div>
+    </div>
+
+    <button onclick="calculateDueDates()" class="btn-primary">
+        <i class="fas fa-calculator"></i>
+        Calcular
+    </button>
+
+    <div id="creditCardResult" class="result">
+        <!-- Resultados serão inseridos aqui -->
+    </div>
+</div>
     </div>
     
     <!-- Loading overlay -->

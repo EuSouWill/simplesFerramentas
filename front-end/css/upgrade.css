@@ -787,3 +787,30 @@ button:focus-visible {
 .calc-item:last-child {
     border-bottom: none;
 }
+
+/* Estilos para detalhamento mensal */
+.month-item {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 5px;
+    border-left: 3px solid var(--primary-color);
+}
+
+.month-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.month-details {
+    margin-left: 10px;
+    color: #666;
+    line-height: 1.4;
+}
+
+.month-details small {
+    display: block;
+    margin-bottom: 2px;
+}
