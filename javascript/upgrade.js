@@ -1518,8 +1518,7 @@ As parcelas aparecerão na sua fatura conforme as datas de fechamento. Lembre-se
 Caso tenha dúvidas sobre as datas de cobrança, estou à disposição!
 
 Atenciosamente,
-[Seu Nome]
-Suporte Técnico`.trim();
+[Seu Nome] `.trim();
 
     return message;
 }
@@ -1610,8 +1609,7 @@ Após ${Utils.formatDate(purchase1EndDate < purchase2EndDate ? purchase1EndDate 
 Caso tenha dúvidas sobre o cronograma de pagamentos, estou à disposição!
 
 Atenciosamente,
-[Seu Nome]
-Suporte Técnico`.trim();
+[Seu Nome]`.trim();
 
     return message;
 }
