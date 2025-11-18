@@ -1,6 +1,10 @@
 const TAXA_BOLETO = 3.87;
 let processedData = [];
 let hiddenColumns = new Set();
+let currentSortOrder = 'original'; // 'asc', 'desc', 'original'
+let editingRowIndex = -1;
+
+
 
 const COLUMN_CONFIG = [
     { key: 'data', label: 'Data da Operação', required: true },
@@ -61,7 +65,6 @@ function parseMonetaryValue(value) {
     if (isNaN(n)) return 0;
     return neg ? -Math.abs(n) : Math.abs(n);
 }
-
 function parseCSV(text) {
     if (!text) return [];
     const raw = text.replace(/\r/g, '');
@@ -103,6 +106,214 @@ function parseCSV(text) {
     return rows;
 }
 
+// Função para ordenar por data
+function sortDataByDate(order) {
+    if (!processedData || processedData.length <= 1) return;
+    
+    const totalRow = processedData.find(row => row.isTotal);
+    const dataRows = processedData.filter(row => !row.isTotal);
+    
+    if (order === 'original') {
+        currentSortOrder = 'original';
+    } else {
+        dataRows.sort((a, b) => {
+            const dateA = parseDate(a.data);
+            const dateB = parseDate(b.data);
+            
+            if (order === 'asc') {
+                return dateA - dateB;
+            } else {
+                return dateB - dateA;
+            }
+        });
+        
+        processedData = [...dataRows];
+        if (totalRow) {
+            processedData.push(totalRow);
+        }
+        currentSortOrder = order;
+    }
+    
+    updateSortButtons();
+    displayResults(totalRow?.valorLiquido || 0, totalRow?.valorOriginal || 0);
+}
+
+// Função auxiliar para converter string de data em objeto Date
+function parseDate(dateStr) {
+    if (!dateStr || dateStr === 'TOTAL') return new Date(0);
+    
+    const formats = [
+        /(\d{1,2})\/(\d{1,2})\/(\d{4})/, // DD/MM/YYYY
+        /(\d{4})-(\d{1,2})-(\d{1,2})/, // YYYY-MM-DD
+        /(\d{1,2})-(\d{1,2})-(\d{4})/ // DD-MM-YYYY
+    ];
+    
+    for (let format of formats) {
+        const match = dateStr.match(format);
+        if (match) {
+            if (format === formats[1]) { // YYYY-MM-DD
+                return new Date(match[1], match[2] - 1, match[3]);
+            } else { // DD/MM/YYYY or DD-MM-YYYY
+                return new Date(match[3], match[2] - 1, match[1]);
+            }
+        }
+    }
+    
+    const date = new Date(dateStr);
+    return isNaN(date.getTime()) ? new Date(0) : date;
+}
+
+// Atualizar botões de ordenação
+function updateSortButtons() {
+    const buttons = document.querySelectorAll('.sort-button');
+    buttons.forEach(btn => btn.classList.remove('active'));
+    
+    const activeBtn = document.querySelector(`[onclick="sortDataByDate('${currentSortOrder}')"]`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+    }
+}
+// Função para adicionar nova linha - CORRIGIDA
+function showAddRowModal() {
+    editingRowIndex = -1;
+    
+    document.getElementById('modalTitle').textContent = 'Adicionar Nova Transação';
+    document.getElementById('rowData').value = new Date().toLocaleDateString('pt-BR');
+    document.getElementById('rowPaciente').value = '';
+    document.getElementById('rowMetodo').value = 'pix';
+    document.getElementById('rowLiquido').value = '';
+    document.getElementById('rowTransacao').value = '';
+    
+    // Mostrar modal com classe adicional
+    const modal = document.getElementById('rowModal');
+    modal.style.display = 'block';
+    modal.classList.add('show');
+    
+    // Focar no primeiro campo
+    setTimeout(() => {
+        document.getElementById('rowData').focus();
+    }, 100);
+}
+
+// Função para editar linha existente
+function editRow(index) {
+    if (!processedData[index] || processedData[index].isTotal) return;
+    
+    editingRowIndex = index;
+    const row = processedData[index];
+    
+    console.log('Editando linha:', row); // Para debug
+    
+    document.getElementById('modalTitle').textContent = 'Editar Transação';
+    document.getElementById('rowData').value = row.data;
+    document.getElementById('rowPaciente').value = row.nomePaciente;
+    
+    // Determinar método baseado no texto
+    let metodo = 'pix';
+    if (row.metodo.toLowerCase().includes('boleto')) metodo = 'boleto';
+    else if (row.metodo.toLowerCase().includes('cartao') || row.metodo.toLowerCase().includes('card')) metodo = 'cartao';
+    
+    document.getElementById('rowMetodo').value = metodo;
+    document.getElementById('rowLiquido').value = row.valorLiquido.toFixed(2).replace('.', ',');
+    document.getElementById('rowTransacao').value = row.idTransacao;
+    
+    // Mostrar modal com classe adicional
+    const modal = document.getElementById('rowModal');
+    modal.style.display = 'block';
+    modal.classList.add('show');
+    
+    // Focar no primeiro campo
+    setTimeout(() => {
+        document.getElementById('rowData').focus();
+    }, 100);
+}
+
+// Fechar modal - CORRIGIDA
+function closeModal() {
+    const modal = document.getElementById('rowModal');
+    modal.style.display = 'none';
+    modal.classList.remove('show');
+    editingRowIndex = -1;
+}
+
+// Salvar linha (adicionar ou editar)
+function saveRow() {
+    const data = document.getElementById('rowData').value.trim();
+    const paciente = document.getElementById('rowPaciente').value.trim();
+    const metodo = document.getElementById('rowMetodo').value;
+    const liquidoStr = document.getElementById('rowLiquido').value.trim();
+    const transacao = document.getElementById('rowTransacao').value.trim();
+    
+    if (!data || !liquidoStr) {
+        alert('Por favor, preencha os campos obrigatórios (Data e Valor Líquido).');
+        return;
+    }
+    
+    const valorLiquido = parseFloat(liquidoStr.replace(',', '.'));
+    if (isNaN(valorLiquido)) {
+        alert('Por favor, insira um valor líquido válido.');
+        return;
+    }
+    
+    // Determinar método e calcular valor original
+    let metodoPagamento = '';
+    let valorOriginal = valorLiquido;
+    
+    switch(metodo) {
+        case 'saque':
+            metodoPagamento = 'Saque';
+            break;
+        case 'boleto':
+            metodoPagamento = 'Boleto Bancário';
+            valorOriginal = valorLiquido + TAXA_BOLETO;
+            break;
+        case 'estorno':
+            metodoPagamento = 'Estorno';
+            break;
+    }
+    
+    const novaLinha = {
+        data: data,
+        nomePaciente: paciente,
+        metodo: metodoPagamento,
+        valorLiquido: valorLiquido,
+        idTransacao: transacao,
+        valorOriginal: valorOriginal,
+        isTotal: false
+    };
+    
+    // Encontrar linha de total
+    const totalRowIndex = processedData.findIndex(row => row.isTotal);
+    const totalRow = totalRowIndex >= 0 ? processedData[totalRowIndex] : null;
+    
+    if (editingRowIndex >= 0) {
+        // Editando linha existente
+        const oldRow = processedData[editingRowIndex];
+        
+        // Atualizar totais
+        if (totalRow) {
+            totalRow.valorLiquido = totalRow.valorLiquido - oldRow.valorLiquido + valorLiquido;
+            totalRow.valorOriginal = totalRow.valorOriginal - oldRow.valorOriginal + valorOriginal;
+        }
+        
+        // Substituir linha
+        processedData[editingRowIndex] = novaLinha;
+        showSuccess('✅ Transação atualizada com sucesso!');
+    } else {
+        // Adicionando nova linha
+        if (totalRow) {
+            totalRow.valorLiquido += valorLiquido;
+            totalRow.valorOriginal += valorOriginal;
+            processedData.splice(totalRowIndex, 0, novaLinha);
+        } else {
+            processedData.push(novaLinha);
+        }
+        showSuccess('✅ Nova transação adicionada com sucesso!');
+    }
+    
+    closeModal();
+    displayResults(totalRow?.valorLiquido || valorLiquido, totalRow?.valorOriginal || valorOriginal);
+}
 function createColumnControls() {
     const togglesDiv = document.getElementById('columnToggles');
     if (!togglesDiv) return;
@@ -252,7 +463,12 @@ function displayResults(totalLiquido, totalOriginal) {
             <td>${formatarMoeda(row.valorLiquido)}</td>
             <td>${row.idTransacao}</td>
             <td>${formatarMoeda(row.valorOriginal)}</td>
-            <td>${row.isTotal ? '' : `<button class="delete-row-btn" onclick="deleteRow(${index})">🗑️ Excluir</button>`}</td>
+            <td>${row.isTotal ? '' : `
+                <div class="action-buttons">
+                    <button class="update-row-btn" onclick="editRow(${index})">✏️ Editar</button>
+                    <button class="delete-row-btn" onclick="deleteRow(${index})">🗑️ Excluir</button>
+                </div>
+            `}</td>
         `;
         tableBody.appendChild(tr);
     });

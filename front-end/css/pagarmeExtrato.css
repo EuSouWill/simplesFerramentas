@@ -333,6 +333,32 @@ tr:hover {
     background: linear-gradient(135deg, #c0392b 0%, #a93226 100%) !important;
 }
 
+button.update-row-btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+    margin-right: 5px;
+}
+.modal-content {
+    padding: 20px;
+    border-radius: 10px;
+    background: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    max-width: 500px;
+    margin: 40px auto;
+}
+
+.sort-controls {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
 .delete-row-btn {
     background: #e74c3c;
     color: white;
@@ -344,6 +370,10 @@ tr:hover {
     transition: all 0.3s ease;
 }
 
+button.update-row-btn:hover {
+    background: #2980b9;
+    transform: scale(1.1);
+}
 .delete-row-btn:hover {
     background: #c0392b;
     transform: scale(1.1);
