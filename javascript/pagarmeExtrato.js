@@ -270,6 +270,9 @@ function saveRow() {
         case 'estorno':
             metodoPagamento = 'Estorno';
             break;
+        default:
+            metodoPagamento = 'PIX';
+            break;
     }
     
     const novaLinha = {
@@ -286,14 +289,27 @@ function saveRow() {
     const totalRowIndex = processedData.findIndex(row => row.isTotal);
     const totalRow = totalRowIndex >= 0 ? processedData[totalRowIndex] : null;
     
+    // MODIFICAÇÃO: Verificar se é saque para não contabilizar no total
+    const isSaque = metodo === 'saque';
+    
     if (editingRowIndex >= 0) {
         // Editando linha existente
         const oldRow = processedData[editingRowIndex];
+        const oldWasSaque = oldRow.metodo.toLowerCase().includes('saque');
         
         // Atualizar totais
         if (totalRow) {
-            totalRow.valorLiquido = totalRow.valorLiquido - oldRow.valorLiquido + valorLiquido;
-            totalRow.valorOriginal = totalRow.valorOriginal - oldRow.valorOriginal + valorOriginal;
+            // Remover valores antigos (se não era saque)
+            if (!oldWasSaque) {
+                totalRow.valorLiquido -= oldRow.valorLiquido;
+                totalRow.valorOriginal -= oldRow.valorOriginal;
+            }
+            
+            // Adicionar novos valores (se não é saque)
+            if (!isSaque) {
+                totalRow.valorLiquido += valorLiquido;
+                totalRow.valorOriginal += valorOriginal;
+            }
         }
         
         // Substituir linha
@@ -302,8 +318,11 @@ function saveRow() {
     } else {
         // Adicionando nova linha
         if (totalRow) {
-            totalRow.valorLiquido += valorLiquido;
-            totalRow.valorOriginal += valorOriginal;
+            // Só adicionar ao total se não for saque
+            if (!isSaque) {
+                totalRow.valorLiquido += valorLiquido;
+                totalRow.valorOriginal += valorOriginal;
+            }
             processedData.splice(totalRowIndex, 0, novaLinha);
         } else {
             processedData.push(novaLinha);
@@ -312,7 +331,7 @@ function saveRow() {
     }
     
     closeModal();
-    displayResults(totalRow?.valorLiquido || valorLiquido, totalRow?.valorOriginal || valorOriginal);
+    displayResults(totalRow?.valorLiquido || (isSaque ? 0 : valorLiquido), totalRow?.valorOriginal || (isSaque ? 0 : valorOriginal));
 }
 function createColumnControls() {
     const togglesDiv = document.getElementById('columnToggles');
@@ -522,7 +541,7 @@ async function processFiles() {
                 const maxIdx = Math.max(dataIndex, metodoIndex, transacaoIndex, liquidoIndex);
                 if (!row || row.length <= maxIdx) continue;
                 
-                const rawLiquido = row[liquidoIndex];
+                const rawLiquido = parseMonetaryValue(row[liquidoIndex]);
                 const parsedLiquido = parseMonetaryValue(rawLiquido);
                 
                 const metodo = row[metodoIndex] || '';
@@ -541,8 +560,13 @@ async function processFiles() {
                 };
                 
                 processedData.push(processedRow);
-                totalLiquido += parsedLiquido;
-                totalOriginal += valorOriginal;
+                
+                // MODIFICAÇÃO: Não contabilizar saques no total
+                const isSaque = metodo.toLowerCase().includes('saque');
+                if (!isSaque) {
+                    totalLiquido += parsedLiquido;
+                    totalOriginal += valorOriginal;
+                }
             }
         }
         
