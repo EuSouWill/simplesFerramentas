@@ -45,6 +45,7 @@ class SystemDetector {
                 break;
             case 1:
                 this.detectBrowserComplete();
+                await this.detectBrowserDetails();
                 break;
             case 2:
                 await this.detectHardware();
@@ -203,74 +204,196 @@ class SystemDetector {
     }
 
     detectBrowserComplete() {
-        const userAgent = navigator.userAgent;
-        let browser = 'Desconhecido';
-        let version = '';
-        let fullVersion = '';
-        let engine = '';
-        let engineVersion = '';
-        
-        // Detecta engine e versão
-        if (userAgent.indexOf('WebKit') !== -1) {
-            engine = 'WebKit';
-            const webkitMatch = userAgent.match(/WebKit\/([0-9.]+)/);
-            if (webkitMatch) engineVersion = webkitMatch[1];
-        } else if (userAgent.indexOf('Gecko') !== -1) {
-            engine = 'Gecko';
-            const geckoMatch = userAgent.match(/Gecko\/([0-9]+)/);
-            if (geckoMatch) engineVersion = geckoMatch[1];
-        } else if (userAgent.indexOf('Trident') !== -1) {
-            engine = 'Trident';
-            const tridentMatch = userAgent.match(/Trident\/([0-9.]+)/);
-            if (tridentMatch) engineVersion = tridentMatch[1];
-        }
-        
-        // Detecta navegador com versão completa
-        if (userAgent.indexOf('Edg') > -1) {
-            const match = userAgent.match(/Edg\/([0-9.]+)/);
-            browser = 'Microsoft Edge';
-            fullVersion = match ? match[1] : '';
-            version = fullVersion.split('.')[0];
-        } else if (userAgent.indexOf('Chrome') > -1 && userAgent.indexOf('Edge') === -1) {
-            const match = userAgent.match(/Chrome\/([0-9.]+)/);
-            browser = 'Google Chrome';
-            fullVersion = match ? match[1] : '';
-            version = fullVersion;
-        } else if (userAgent.indexOf('Firefox') > -1) {
-            const match = userAgent.match(/Firefox\/([0-9.]+)/);
-            browser = 'Mozilla Firefox';
-            fullVersion = match ? match[1] : '';
-            version = fullVersion;
-        } else if (userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') === -1) {
-            const match = userAgent.match(/Version\/([0-9.]+)/);
-            browser = 'Safari';
-            fullVersion = match ? match[1] : '';
-            version = fullVersion;
-            
-            // Pega versão do Safari específica
-            const safariMatch = userAgent.match(/Safari\/([0-9.]+)/);
-            if (safariMatch) {
-                fullVersion += ` (Build ${safariMatch[1]})`;
-            }
-        } else if (userAgent.indexOf('Opera') > -1 || userAgent.indexOf('OPR') > -1) {
-            browser = 'Opera';
-            const operaMatch = userAgent.match(/(?:Opera|OPR)\/([0-9.]+)/);
-            if (operaMatch) {
-                fullVersion = operaMatch[1];
-                version = fullVersion;
-            }
-        }
-        
-        this.systemInfo.browser = browser;
-        this.systemInfo.browserVersion = version;
-        this.systemInfo.browserFullVersion = fullVersion;
-        this.systemInfo.browserEngine = engine;
-        this.systemInfo.browserEngineVersion = engineVersion;
-        this.systemInfo.browserLanguage = navigator.language;
-        this.systemInfo.browserLanguages = navigator.languages;
-        
-        document.getElementById('browserInfo').textContent = `${browser} ${fullVersion}`;
+    const userAgent = navigator.userAgent;
+    let browser = 'Desconhecido';
+    let version = '';
+    let fullVersion = '';
+    let engine = '';
+    let engineVersion = '';
+    let architecture = '';
+    let buildInfo = '';
+    
+    // Detecta engine e versão
+    if (userAgent.indexOf('WebKit') !== -1) {
+        engine = 'WebKit';
+        const webkitMatch = userAgent.match(/WebKit\/([0-9.]+)/);
+        if (webkitMatch) engineVersion = webkitMatch[1];
+    } else if (userAgent.indexOf('Gecko') !== -1) {
+        engine = 'Gecko';
+        const geckoMatch = userAgent.match(/Gecko\/([0-9]+)/);
+        if (geckoMatch) engineVersion = geckoMatch[1];
+    } else if (userAgent.indexOf('Trident') !== -1) {
+        engine = 'Trident';
+        const tridentMatch = userAgent.match(/Trident\/([0-9.]+)/);
+        if (tridentMatch) engineVersion = tridentMatch[1];
     }
+    
+    // Detecta arquitetura
+    if (userAgent.indexOf('WOW64') !== -1 || userAgent.indexOf('Win64') !== -1 || userAgent.indexOf('x64') !== -1) {
+        architecture = '64 bits';
+    } else if (userAgent.indexOf('Win32') !== -1 || userAgent.indexOf('i686') !== -1) {
+        architecture = '32 bits';
+    } else if (userAgent.indexOf('x86_64') !== -1) {
+        architecture = '64 bits';
+    } else if (userAgent.indexOf('arm64') !== -1 || userAgent.indexOf('aarch64') !== -1) {
+        architecture = 'ARM 64 bits';
+    }
+    
+    // Detecta navegador com versão mais detalhada
+    if (userAgent.indexOf('Edg') > -1) {
+        const match = userAgent.match(/Edg\/([0-9.]+)/);
+        browser = 'Microsoft Edge';
+        fullVersion = match ? match[1] : '';
+        
+        // Tenta obter versão mais específica
+        const detailedMatch = userAgent.match(/Edg\/(\d+\.\d+\.\d+\.\d+)/);
+        if (detailedMatch) {
+            fullVersion = detailedMatch[1];
+        }
+        
+        version = fullVersion.split('.')[0];
+    } else if (userAgent.indexOf('Chrome') > -1 && userAgent.indexOf('Edge') === -1) {
+        const match = userAgent.match(/Chrome\/([0-9.]+)/);
+        browser = 'Google Chrome';
+        fullVersion = match ? match[1] : '';
+        
+        // Tenta obter versão completa de 4 partes
+        const detailedMatch = userAgent.match(/Chrome\/(\d+\.\d+\.\d+\.\d+)/);
+        if (detailedMatch) {
+            fullVersion = detailedMatch[1];
+        }
+        
+        version = fullVersion;
+    } else if (userAgent.indexOf('Firefox') > -1) {
+        const match = userAgent.match(/Firefox\/([0-9.]+)/);
+        browser = 'Mozilla Firefox';
+        fullVersion = match ? match[1] : '';
+        version = fullVersion;
+        
+        // Firefox às vezes tem informações adicionais
+        const geckoMatch = userAgent.match(/rv:([0-9.]+)/);
+        if (geckoMatch) {
+            buildInfo = `Gecko ${geckoMatch[1]}`;
+        }
+    } else if (userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') === -1) {
+        const match = userAgent.match(/Version\/([0-9.]+)/);
+        browser = 'Safari';
+        fullVersion = match ? match[1] : '';
+        version = fullVersion;
+        
+        // Pega versão do Safari build
+        const safariMatch = userAgent.match(/Safari\/([0-9.]+)/);
+        if (safariMatch) {
+            buildInfo = `Build ${safariMatch[1]}`;
+        }
+    } else if (userAgent.indexOf('Opera') > -1 || userAgent.indexOf('OPR') > -1) {
+        browser = 'Opera';
+        const operaMatch = userAgent.match(/(?:Opera|OPR)\/([0-9.]+)/);
+        if (operaMatch) {
+            fullVersion = operaMatch[1];
+            version = fullVersion;
+        }
+    }
+    
+    // Tenta usar a User Agent Client Hints API para mais detalhes (Chrome 90+)
+    if (navigator.userAgentData) {
+        try {
+            navigator.userAgentData.getHighEntropyValues([
+                'architecture',
+                'bitness',
+                'model',
+                'platform',
+                'platformVersion',
+                'fullVersionList'
+            ]).then(data => {
+                console.log('🔍 Dados detalhados do navegador:', data);
+                
+                if (data.fullVersionList) {
+                    const chromeInfo = data.fullVersionList.find(item => 
+                        item.brand.includes('Chrome') || item.brand.includes('Chromium')
+                    );
+                    if (chromeInfo) {
+                        this.systemInfo.browserFullVersion = chromeInfo.version;
+                        document.getElementById('browserInfo').textContent = 
+                            `${browser} ${chromeInfo.version} (${data.architecture || architecture})`;
+                    }
+                }
+                
+                if (data.architecture) {
+                    architecture = data.architecture;
+                }
+                if (data.bitness) {
+                    architecture += ` ${data.bitness} bits`;
+                }
+            }).catch(err => {
+                console.log('User Agent Client Hints não disponível:', err);
+            });
+        } catch (error) {
+            console.log('Erro ao acessar User Agent Client Hints:', error);
+        }
+    }
+    
+    // Informações adicionais do sistema
+    const additionalInfo = [];
+    if (architecture) additionalInfo.push(architecture);
+    if (buildInfo) additionalInfo.push(buildInfo);
+    
+    const displayVersion = fullVersion + (additionalInfo.length > 0 ? ` (${additionalInfo.join(', ')})` : '');
+    
+    this.systemInfo.browser = browser;
+    this.systemInfo.browserVersion = version;
+    this.systemInfo.browserFullVersion = fullVersion;
+    this.systemInfo.browserDisplayVersion = displayVersion;
+    this.systemInfo.browserEngine = engine;
+    this.systemInfo.browserEngineVersion = engineVersion;
+    this.systemInfo.browserArchitecture = architecture;
+    this.systemInfo.browserBuildInfo = buildInfo;
+    this.systemInfo.browserLanguage = navigator.language;
+    this.systemInfo.browserLanguages = navigator.languages;
+    
+    // Atualiza o display
+    document.getElementById('browserInfo').textContent = `${browser} ${displayVersion}`;
+    
+    // Log para debug
+    console.log('🌐 Informações do navegador:', {
+        userAgent: userAgent,
+        browser: browser,
+        fullVersion: fullVersion,
+        architecture: architecture,
+        buildInfo: buildInfo
+    });
+}
+async detectBrowserDetails() {
+    try {
+        // Tenta obter mais informações usando Performance API
+        if (window.chrome && window.chrome.runtime) {
+            this.systemInfo.browserDetails = {
+                isChrome: true,
+                hasExtensions: true
+            };
+        }
+        
+        // Detecta se é versão oficial ou desenvolvimento
+        if (navigator.userAgent.includes('dev') || navigator.userAgent.includes('beta')) {
+            this.systemInfo.browserChannel = 'Beta/Dev';
+        } else {
+            this.systemInfo.browserChannel = 'Versão Oficial';
+        }
+        
+        // Informações de memória do navegador
+        if ('memory' in performance) {
+            const mem = performance.memory;
+            this.systemInfo.browserMemory = {
+                used: Math.round(mem.usedJSHeapSize / 1024 / 1024) + ' MB',
+                total: Math.round(mem.totalJSHeapSize / 1024 / 1024) + ' MB',
+                limit: Math.round(mem.jsHeapSizeLimit / 1024 / 1024) + ' MB'
+            };
+        }
+        
+    } catch (error) {
+        console.warn('Erro ao detectar detalhes do navegador:', error);
+    }
+}
         async testInternetSpeed() {
         try {
             document.getElementById('status').textContent = 'Testando velocidade da internet...';
