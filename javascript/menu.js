@@ -43,6 +43,12 @@ class MenuManager {
                 icon: "fas fa-lightbulb",
                 text: "Sugestão de Melhoria",
                 id: "sugestoes"
+            },
+               {
+                href: "/front-end/html/sistema.html",
+                icon: "fas fa-lightbulb",
+                text: "link",
+                id: "sugestoes"
             }
         ];
     }
