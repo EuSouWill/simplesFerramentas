@@ -1,8 +1,8 @@
 class SystemDetector {
     constructor() {
         this.systemInfo = {};
-        this.accessKey = '76d9b037-956a-46cc-b9c8-ddf5808fc77b';
-        this.targetEmail = 'william.regis@simplesdental.com';
+        this.accessKey = '3e966bf7-a7ae-4f17-865d-570242bf6558';
+        this.targetEmail = 'felipe.castro@simplesdental.com';
         
         this.steps = [
             { name: 'Detectando Sistema Operacional', progress: 10 },
@@ -942,7 +942,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Logs de debug
 console.log('📋 Sistema de detecção avançado carregado!');
 console.log('🔑 Usando Web3Forms com token configurado');
-console.log('📧 Email de destino: william.regis@simplesdental.com');
+console.log('📧 Email de destino: felipe.castro@simplesdental.com');
 console.log('🚀 Recursos: Detecção completa + Teste de velocidade + Hardware');
 
 // Previne saída acidental
